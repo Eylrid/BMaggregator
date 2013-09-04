@@ -1,0 +1,6 @@
+*.pyc
+PyBitmessage
+data*
+*report*
+ignore
+config

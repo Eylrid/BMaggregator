@@ -1,0 +1,63 @@
+Commands:
+-Subscribe [label]
+  -Sending address is added to subscriptions.
+-Subscribe Other <BM-address>
+  -<BM-address> is added to subscriptions, allows users to add an address they don't own. Exception if <BM-address> has sent a Unscribe command.
+-Unsubscribe
+  -Sending address is removed from subscriptions. Exception for chans.
+-help
+  -reply with a help message
+-Stats
+  -reply with a Stats message (see below)
+-Subjects [timeframe] [limit]
+  -reply with a Subjects message (see below)
+-Search
+  -reply with a Subjects message for matching messages
+
+Special Messages:
+-Stats
+  -List subscriptions by label (if available), address, number of messages sent last 24 hrs, 1 week, 3 weeks, average messages per day over life of subscription.
+
+-Subjects:
+  -List subjects by address label (if available), address, subject, count, first message time, last message time
+
+Addresses:
+-Announcements
+  -Announcements about the aggregator itself
+-Stats
+  -Broadcasts Stats messages every so often (1 every 2 days?)
+-Subjects
+  -Sends subjects mesages (2 days or every 50 subjects, whichever is sooner)
+-Full Messages
+  -Rebroadcasts incoming broadcasts from subcriptions. Checks for duplicates first.
+
+Kinds of addresses to track:
+-Chans
+-Broadcasters
+
+Todo:
+-Setup second BM instance - DONE
+-Get BMA listening for messages
+  -Connect to BM - DONE
+  -Record messages ~ Done
+  -Check for duplicates ~ Done
+-Get BMA broadcasting ~ Done
+-Create bittext: dOe7aAIVnZ - DONE
+-Get BMA updating bittext - Done
+-Add labels to report - DONE
+-Remove '[Chan]' from chan labels - DONE
+-Annouce bma - DONE
+-persistance - DONE
+-Write info bittext - DONE
+-Hourly report - DONE
+-Setup automatic sending ~ Done?
+-track subject/address correlation ~ Done
+-git commit
+-Update Notes
+-Finish new report style
+-Get non-tracked messages
+-Get BMA to respond to commands
+-Release BMA code
+-Implement search
+
+Kickstarter for server?
