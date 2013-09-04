@@ -1,39 +1,25 @@
 Commands:
--Subscribe [label]
+-add broadcast <label>
   -Sending address is added to subscriptions.
--Subscribe Other <BM-address>
-  -<BM-address> is added to subscriptions, allows users to add an address they don't own. Exception if <BM-address> has sent a Unscribe command.
--Unsubscribe
+-add chan <name>
+  -Sending chan is added to subscriptions.
+-remove broadcast
   -Sending address is removed from subscriptions. Exception for chans.
 -help
   -reply with a help message
--Stats
-  -reply with a Stats message (see below)
--Subjects [timeframe] [limit]
-  -reply with a Subjects message (see below)
--Search
-  -reply with a Subjects message for matching messages
-
-Special Messages:
--Stats
-  -List subscriptions by label (if available), address, number of messages sent last 24 hrs, 1 week, 3 weeks, average messages per day over life of subscription.
-
--Subjects:
-  -List subjects by address label (if available), address, subject, count, first message time, last message time
+-info
+  -reply with info message
 
 Addresses:
--Announcements
-  -Announcements about the aggregator itself
--Stats
-  -Broadcasts Stats messages every so often (1 every 2 days?)
--Subjects
-  -Sends subjects mesages (2 days or every 50 subjects, whichever is sooner)
--Full Messages
-  -Rebroadcasts incoming broadcasts from subcriptions. Checks for duplicates first.
+-Main, BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN, Full Reports
+-Chans Only
+-Broadcasts Only
+-Mailing Lists only
 
 Kinds of addresses to track:
 -Chans
 -Broadcasters
+-Mailing Lists
 
 Todo:
 -Setup second BM instance - DONE
@@ -51,10 +37,14 @@ Todo:
 -Write info bittext - DONE
 -Hourly report - DONE
 -Setup automatic sending ~ Done?
--track subject/address correlation ~ Done
--git commit
+-track subject/address correlation - DONE
+-git commit - DONE
 -Update Notes
--Finish new report style
+-Finish new report style - DONE
+-Publish seperate reports
+  -New bittexts
+  -New addresses
+-Seperate broadcasts and mailing lists
 -Get non-tracked messages
 -Get BMA to respond to commands
 -Release BMA code
