@@ -11,10 +11,15 @@ Commands:
   -reply with info message
 
 Addresses:
--Main, BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN, Full Reports
--Chans Only
--Broadcasts Only
+-Main: BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN, Full Reports
+-Chans Only: BM-GtmZH9PQ7DdhhrxtTeCrBhnEbuSK9Atp
+-Broadcasts Only: BM-Gtzu1qGn8jhZkNCnG2j7nVgt645k29H8
 -Mailing Lists only
+
+Bittexts:
+-Main: dOe7aAIVnZ
+-Chans: N3Z4fiuSFW
+-Broadcasts: HqdIvnnxI1
 
 Kinds of addresses to track:
 -Chans
@@ -39,11 +44,13 @@ Todo:
 -Setup automatic sending ~ Done?
 -track subject/address correlation - DONE
 -git commit - DONE
--Update Notes
+-Update Notes - DONE
 -Finish new report style - DONE
--Publish seperate reports
-  -New bittexts
-  -New addresses
+-Publish seperate reports - DONE
+  -New addresses - DONE
+  -New bittexts - DONE
+-Improve descriptions for secondary reports
+-convert internal strings to unicode
 -Seperate broadcasts and mailing lists
 -Get non-tracked messages
 -Get BMA to respond to commands
