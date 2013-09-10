@@ -23,6 +23,7 @@ class Message:
         self.trashed = False
 
 class Aggregator:
+    SEPERATOR = u'~'
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None):
         config = loadConfig()
         if not apiUser:
@@ -350,7 +351,7 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
 
         for count, address, label in chans:
             chanHeader = u'%d    %s    %s' %(count, address, label)
-            lines = u'-'*len(chanHeader)
+            lines = Aggregator.SEPERATOR*len(chanHeader)
             report += u'\n%s\n%s\n' %(chanHeader, lines)
 
             messages = self.getMessagesInTimeFrame(self.addresses[address],
@@ -367,6 +368,8 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
 
             for count, subject in subjectCounts:
                 report += u'%d\t%s\n' %(count, subject)
+
+            report += u'\n'
 
         return report
 
@@ -403,7 +406,7 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
 
         for count, address, label in broadcasts:
             broadcastHeader = u'%d    %s    %s' %(count, address, label)
-            lines = '-'*len(broadcastHeader)
+            lines = Aggregator.SEPERATOR*len(broadcastHeader)
             report += u'\n%s\n%s\n' %(broadcastHeader, lines)
 
             messages = self.getMessagesInTimeFrame(self.addresses[address],
@@ -420,6 +423,8 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
 
             for count, subject in subjectCounts:
                 report += u'%d\t%s\n' %(count, subject)
+
+            report += u'\n'
 
         return report
 
