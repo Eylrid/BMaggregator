@@ -23,7 +23,15 @@ class Message:
         self.trashed = False
 
 class Aggregator:
-    def __init__(self, apiUser, apiPassword, apiPort):
+    def __init__(self, apiUser=None, apiPassword=None, apiPort=None):
+        config = loadConfig()
+        if not apiUser:
+            apiUser = config['apiUser']
+        if not apiPassword:
+            apiPassword = config['apiPassword']
+        if not apiPort:
+            apiPort = config['apiPort']
+
         apiAddress = "http://%s:%s@localhost:%s/" %(apiUser, apiPassword,
                                                     apiPort)
         self.api = xmlrpclib.ServerProxy(apiAddress)
@@ -60,6 +68,8 @@ class Aggregator:
             self.ids[message.msgid] = message
             self.addMessageToSubject(message.subject, message)
             self.addMessageToAddress(message)
+
+        self.trashMessages()
 
     def loadPublishTime(self):
         if os.path.isfile(self.publishTimeFilePath):
@@ -129,6 +139,7 @@ class Aggregator:
             self.api.trashMessage(msg.msgid)
             msg.trashed = True
         self.saveEverything()
+        print 'messages trashed'
 
     def getAddressFromMessage(self, message):
         if self.addressType(message.toAddress) == 'CHAN':
@@ -440,22 +451,28 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
 
         return startTime, endTime
 
+    def check(self):
+        nextPublishTime = self.publishTime + 86400
+        now = time.time()
+        self.addNewMessages()
+        if now >= nextPublishTime:
+            self.publishAllReports()
+            print 'Reports Published'
+            return 0
+        else:
+            return nextPublishTime-now
+
     def loop(self):
         while True:
-            nextPublishTime = self.publishTime + 86400
-            now = time.time()
-            if now >= nextPublishTime:
-                self.getNewMessages()
-                self.trashMessages()
-                self.publishAllReports()
-                print 'Reports Published'
-            else:
-                time.sleep(nextPublishTime-now)
+            result = self.check()
+            if result:
+                time.sleep(result)
 
 def loadConfig():
     with open('config', 'r') as file:
         args = {}
         for line in file.readlines():
+            if not line.strip(): continue
             key, value = line.split(':')
             key = key.strip()
             value = value.strip()
