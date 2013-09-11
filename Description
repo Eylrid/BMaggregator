@@ -9,7 +9,7 @@ Full - BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN - dOe7aAIVnZ - Info for all address
 Chans - BM-GtmZH9PQ7DdhhrxtTeCrBhnEbuSK9Atp - N3Z4fiuSFW - Info for chans
 Broadcasts - BM-Gtzu1qGn8jhZkNCnG2j7nVgt645k29H8 - HqdIvnnxI1 - Info for broadcast addresses and mailing lists
 
-If you would like to add a chan or broadcast address to be tracked send a message from that address to BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN with the chan name or broadcast label.
+If you would like to add a chan or broadcast address to be tracked send a message from that address to BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN with the subject "add chan <name>" or "add broadcast <label>", respectively.
 
 Bitcoin donation address: 16jkR5asYvbWhJJQ23FYpCuKkd6xjrMuoT
 
