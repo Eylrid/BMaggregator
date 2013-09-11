@@ -24,6 +24,7 @@ class Message:
 
 class Aggregator:
     SEPERATOR = u'~'
+    CHECKINTERVAL = 3600
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None):
         config = loadConfig()
         if not apiUser:
@@ -463,9 +464,9 @@ More info about BMaggregator can be found at bittext.ch/btDiTl8V_d
         if now >= nextPublishTime:
             self.publishAllReports()
             print 'Reports Published'
-            return 0
-        else:
-            return nextPublishTime-now
+
+        timeToNextCheck = Aggregator.CHECKINTERVAL-time.time()%Aggregator.CHECKINTERVAL
+        return timeToNextCheck
 
     def loop(self):
         while True:
