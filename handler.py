@@ -60,6 +60,23 @@ class Handler:
                 else:
                     #error
                     continue
+            elif command == 'chan':
+                encodedPassphrase = details.encode('utf-8').encode('base64')
+                self.log('adding chan %s' %(details))
+                address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
+                fromAddress = message['fromAddress']
+                if address != fromAddress:
+                    #message sent from address not belonging to chan
+                    continue
+
+                result = self.api.addChan(encodedPassphrase)
+                self.log('addChan result %s' %result)
+                if 'Added chan' in result:
+                    self.confirmChan(address, details)
+                    self.trashMessage(message)
+                else:
+                    #error
+                    continue
 
     def confirmSubscription(self, toAddress, label):
         fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
@@ -67,11 +84,27 @@ class Handler:
         encodedSubject = rawSubject.encode('base64')
         rawMessage = "Address %s added to BMaggregator as a broadcast with label '%s'" %(toAddress, label)
         encodedMessage = rawMessage.encode('utf-8').encode('base64')
-        logEntry = '''sending confirmation
+        logEntry = '''sending broadcast confirmation
 toAddress:%s
 fromAddress:%s
 subject:%s
 message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
+        self.log(logEntry)
+        self.api.sendMessage(toAddress, fromAddress,
+                             encodedSubject, encodedMessage)
+
+    def confirmChan(self, toAddress, label):
+        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        rawSubject = 'Chan Add Confirmation'
+        encodedSubject = rawSubject.encode('base64')
+        rawMessage = "Added chan %s with address %s to BMaggregator." %(label, toAddress)
+        encodedMessage = rawMessage.encode('utf-8').encode('base64')
+        logEntry = '''sending chan confirmation
+toAddress:%s
+fromAddress:%s
+label:%s
+subject:%s
+message:%s''' %(toAddress, fromAddress, label, rawSubject, rawMessage)
         self.log(logEntry)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
@@ -82,9 +115,13 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
         self.api.trashMessage(msgid)
 
     def parseSubject(self, subject):
-        match = re.match(r'(?i)\s*add\s+broadcast\s+(\S.*?)\s*$', subject)
-        if match:
-            return ('subscription', match.group(1))
+        patterns = [(r'(?i)\s*add\s+broadcast\s+(\S.*?)\s*$', 'subscription'),
+                    (r'(?i)\s*add\s+chan\s+(\S.*?)\s*$', 'chan')]
+        for pattern, command in patterns:
+            match = re.match(pattern, subject)
+            if match:
+                return (command, match.group(1))
+
         else:
             return ('ignore', '')
 
