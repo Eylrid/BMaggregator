@@ -48,7 +48,9 @@ class Handler:
             self.log('processing message with subject ' + subject)
             command, details = self.parseSubject(subject)
             self.log('command, details: %s, %s' %(command, details))
-            if command == 'subscription':
+            if command == 'ignore':
+                continue
+            elif command == 'subscription':
                 encodedLabel = details.encode('utf-8').encode('base64')
                 address = message['fromAddress']
                 self.log('adding subcription %s as %s' %(address, details))
@@ -56,10 +58,12 @@ class Handler:
                 self.log('addSubscription result %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
-                    self.trashMessage(message)
+                elif 'API Error 0016':
+                    #Already subscribed
+                    self.sendError(address, 'That address is already being tracked.')
                 else:
-                    #error
-                    continue
+                    #unknown error
+                    self.sendError(address)
             elif command == 'chan':
                 encodedPassphrase = details.encode('utf-8').encode('base64')
                 self.log('adding chan %s' %(details))
@@ -67,16 +71,21 @@ class Handler:
                 fromAddress = message['fromAddress']
                 if address != fromAddress:
                     #message sent from address not belonging to chan
-                    continue
-
-                result = self.api.addChan(encodedPassphrase)
-                self.log('addChan result %s' %result)
-                if 'Added chan' in result:
-                    self.confirmChan(address, details)
-                    self.trashMessage(message)
+                    self.log('message sent from address not belonging to chan')
+                    self.sendError(fromAddress, 'Passphrase doesn\'t match address. Please check the passphrase and also make sure you are sending from the chan address')
                 else:
-                    #error
-                    continue
+                    result = self.api.addChan(encodedPassphrase)
+                    self.log('addChan result %s' %result)
+                    if 'Added chan' in result:
+                        self.confirmChan(address, details)
+                    elif 'API Error 0016':
+                        #Already tracked
+                        self.sendError(address, 'This chan is already being tracked.')
+                    else:
+                        #unknown error
+                        self.sendError(address)
+
+            self.trashMessage(message)
 
     def confirmSubscription(self, toAddress, label):
         fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
@@ -102,9 +111,24 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
         logEntry = '''sending chan confirmation
 toAddress:%s
 fromAddress:%s
-label:%s
 subject:%s
-message:%s''' %(toAddress, fromAddress, label, rawSubject, rawMessage)
+message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
+        self.log(logEntry)
+        self.api.sendMessage(toAddress, fromAddress,
+                             encodedSubject, encodedMessage)
+
+    def sendError(self, toAddress, rawMessage=None):
+        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        rawSubject = 'Error'
+        encodedSubject = rawSubject.encode('base64')
+        if rawMessage == None:
+            rawMessage = 'There was an unknown error processing your request.'
+        encodedMessage = rawMessage.encode('utf-8').encode('base64')
+        logEntry = '''sending error message
+toAddress:%s
+fromAddress:%s
+subject:%s
+message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
         self.log(logEntry)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
