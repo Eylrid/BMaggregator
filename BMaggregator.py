@@ -203,9 +203,9 @@ class Aggregator:
     def publishAllReports(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
 
-        self.publishMainReport(startTime=None, endTime=None)
-        self.publishChanReport(startTime=None, endTime=None)
-        self.publishBroadcastReport(startTime=None, endTime=None)
+        self.publishMainReport(startTime=startTime, endTime=endTime)
+        self.publishChanReport(startTime=startTime, endTime=endTime)
+        self.publishBroadcastReport(startTime=startTime, endTime=endTime)
 
         self.publishTime = time.time()
         self.saveEverything()
