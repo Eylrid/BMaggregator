@@ -17,9 +17,10 @@ Addresses:
 -Mailing Lists only
 
 Bittexts:
--Main: dOe7aAIVnZ
--Chans: N3Z4fiuSFW
--Broadcasts: HqdIvnnxI1
+-Info: btDiTl8V_d -> bmaggrinfo
+-Main: dOe7aAIVnZ -> bmaggrmain
+-Chans: N3Z4fiuSFW -> bmaggrchan
+-Broadcasts: HqdIvnnxI1 -> bmaggrsubs
 
 Kinds of addresses to track:
 -Chans
@@ -49,11 +50,17 @@ Todo:
 -Publish seperate reports - DONE
   -New addresses - DONE
   -New bittexts - DONE
--Improve descriptions for secondary reports
--convert internal strings to unicode
+-Improve descriptions for secondary reports - DONE
+-Fix '-------------' problem - Done
+
+-Publish list of tracked addresses
+-List new addresses
+
+-convert internal strings to unicode?
 -Seperate broadcasts and mailing lists
--Get non-tracked messages
--Get BMA to respond to commands
+-Add Totals?
+-Get non-tracked messages - DONE
+-Get BMA to respond to commands - DONE
 -Release BMA code
 -Implement search
 
