@@ -165,7 +165,7 @@ class Aggregator:
     def getChanAddresses(self):
         addresses = json.loads(self.api.listAddresses())['addresses']
         return dict([(i['address'], i['label'][6:].strip()) for i in addresses
-                      if i['label'].startswith('[chan]')])
+                      if i['chan']])
 
     def getSubscriptions(self):
         addresses = json.loads(self.api.listSubscriptions())['subscriptions']
