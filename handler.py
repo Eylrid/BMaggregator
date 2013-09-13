@@ -71,6 +71,12 @@ class Handler:
                 self.log('adding chan %s' %(details))
                 address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
                 fromAddress = message['fromAddress']
+                if details.startswith('<') and details.endswith('>') and address != fromAddress:
+                    self.log('striping <>')
+                    details = details[1:-1]
+                    encodedPassphrase = details.encode('utf-8').encode('base64')
+                    address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
+
                 if address != fromAddress:
                     #message sent from address not belonging to chan
                     self.log('message sent from address not belonging to chan')
