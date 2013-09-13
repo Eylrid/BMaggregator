@@ -64,6 +64,8 @@ class Handler:
                 else:
                     #unknown error
                     self.sendError(address)
+            elif command == 'subnolabel':
+                self.sendError(message['fromAddress'], 'No label specified. Please include a label in the subject. Example: "add broadcast Cat Blog"')
             elif command == 'chan':
                 encodedPassphrase = details.encode('utf-8').encode('base64')
                 self.log('adding chan %s' %(details))
@@ -84,6 +86,11 @@ class Handler:
                     else:
                         #unknown error
                         self.sendError(address)
+            elif command == 'channoname':
+                self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
+            else:
+                self.log('UNRECOGNIZED COMMAND! ' + command)
+                continue
 
             self.trashMessage(message)
 
@@ -140,7 +147,9 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
 
     def parseSubject(self, subject):
         patterns = [(r'(?i)\s*add\s+broadcast\s+(\S.*?)\s*$', 'subscription'),
-                    (r'(?i)\s*add\s+chan\s+(\S.*?)\s*$', 'chan')]
+                    (r'(?i)\s*add\s+broadcast\s*()$', 'subnolabel'),
+                    (r'(?i)\s*add\s+chan\s+(\S.*?)\s*$', 'chan'),
+                    (r'(?i)\s*add\s+chan\s*()$', 'channoname')]
         for pattern, command in patterns:
             match = re.match(pattern, subject)
             if match:
