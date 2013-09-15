@@ -1,0 +1,15 @@
+BMaggregator
+============
+
+BMaggregator tracks chans and subscriptions (broadcasts and mailing lists).
+It publishes daily activity reports.
+
+To use:
+-Setup a new bitmessage client, with api enabled.
+-Create a file named "config" with the api information. (See exampleconfig)
+-Create a similar file named "handlerconfig". (See examplehandlerconfig)
+-Put handlerconfig in the directory that the bitmessage client is running from.
+-In keys.dat set the apinotifypath to handler.py. Example:
+  "apinotifypath=/home/user/BMaggregator/handler.py"
+-Start bitmessage.
+-Run loop.py
