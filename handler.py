@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
 import json
-import time
 import os
 import sys
 import re
 from api_user import ApiUser
+from logger import Logger
 LOGPATH = 'handlerLog'
 CONFIGPATH = 'handlerconfig'
 
@@ -13,7 +13,8 @@ class Handler(ApiUser):
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=CONFIGPATH):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
-        self.logPath = self.config.get('logPath', LOGPATH)
+        logPath = self.config.get('logPath', LOGPATH)
+        self.logger = Logger(logPath)
 
     def filterMessages(self, messages):
         addresses = json.loads(self.api.listAddresses())['addresses']
@@ -32,17 +33,17 @@ class Handler(ApiUser):
     def processMessages(self, messages):
         for message in messages:
             subject =  message['subject'].decode('base64').decode('utf-8')
-            self.log('processing message with subject ' + subject)
+            self.logger.log('processing message with subject ' + subject)
             command, details = self.parseSubject(subject)
-            self.log('command, details: %s, %s' %(command, details))
+            self.logger.log('command, details: %s, %s' %(command, details))
             if command == 'ignore':
                 continue
             elif command == 'subscription':
                 encodedLabel = details.encode('utf-8').encode('base64')
                 address = message['fromAddress']
-                self.log('adding subcription %s as %s' %(address, details))
+                self.logger.log('adding subcription %s as %s' %(address, details))
                 result = self.api.addSubscription(address, encodedLabel)
-                self.log('addSubscription result %s' %result)
+                self.logger.log('addSubscription result %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
                 elif 'API Error 0016':
@@ -55,22 +56,22 @@ class Handler(ApiUser):
                 self.sendError(message['fromAddress'], 'No label specified. Please include a label in the subject. Example: "add broadcast Cat Blog"')
             elif command == 'chan':
                 encodedPassphrase = details.encode('utf-8').encode('base64')
-                self.log('adding chan %s' %(details))
+                self.logger.log('adding chan %s' %(details))
                 address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
                 fromAddress = message['fromAddress']
                 if details.startswith('<') and details.endswith('>') and address != fromAddress:
-                    self.log('striping <>')
+                    self.logger.log('striping <>')
                     details = details[1:-1]
                     encodedPassphrase = details.encode('utf-8').encode('base64')
                     address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
 
                 if address != fromAddress:
                     #message sent from address not belonging to chan
-                    self.log('message sent from address not belonging to chan')
+                    self.logger.log('message sent from address not belonging to chan')
                     self.sendError(fromAddress, 'Passphrase doesn\'t match address. Please check the passphrase and also make sure you are sending from the chan address')
                 else:
                     result = self.api.addChan(encodedPassphrase)
-                    self.log('addChan result %s' %result)
+                    self.logger.log('addChan result %s' %result)
                     if 'Added chan' in result:
                         self.confirmChan(address, details)
                     elif 'API Error 0016':
@@ -82,7 +83,7 @@ class Handler(ApiUser):
             elif command == 'channoname':
                 self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
             else:
-                self.log('UNRECOGNIZED COMMAND! ' + command)
+                self.logger.log('UNRECOGNIZED COMMAND! ' + command)
                 continue
 
             self.trashMessage(message)
@@ -98,7 +99,7 @@ toAddress:%s
 fromAddress:%s
 subject:%s
 message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.log(logEntry)
+        self.logger.log(logEntry)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
 
@@ -113,7 +114,7 @@ toAddress:%s
 fromAddress:%s
 subject:%s
 message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.log(logEntry)
+        self.logger.log(logEntry)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
 
@@ -129,13 +130,13 @@ toAddress:%s
 fromAddress:%s
 subject:%s
 message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.log(logEntry)
+        self.logger.log(logEntry)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
 
     def trashMessage(self, message):
         msgid = message['msgid']
-        self.log('trashing %s' % msgid)
+        self.logger.log('trashing %s' % msgid)
         self.api.trashMessage(msgid)
 
     def parseSubject(self, subject):
@@ -150,13 +151,6 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
 
         else:
             return ('ignore', '')
-
-    def log(self, message):
-        print message
-        with open(self.logPath, 'a') as file:
-            file.write('\n*************\n%s\n' %time.ctime())
-            file.write(message.encode('utf-8'))
-            file.write('\n')
 
 
 def loadConfig():
@@ -180,7 +174,7 @@ def main():
 
     if arg == 'newMessage':
         handler = Handler()
-        handler.log('newMessage')
+        handler.logger.log('newMessage')
         allmsgs = handler.getRawMessages()
         filteredmsgs = handler.filterMessages(allmsgs)
         print 'all messages:', len(allmsgs)
