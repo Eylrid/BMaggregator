@@ -6,3 +6,5 @@ PyBitmessage
 ignore
 config
 *~
+*log
+*Log
