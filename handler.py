@@ -1,32 +1,19 @@
 #!/usr/bin/python
 
-import xmlrpclib
 import json
 import time
 import os
 import sys
 import re
+from api_user import ApiUser
 LOGPATH = 'handlerLog'
+CONFIGPATH = 'handlerconfig'
 
-class Handler:
-    def __init__(self, apiUser=None, apiPassword=None, apiPort=None):
-        config = loadConfig()
-        if not apiUser:
-            apiUser = config['apiUser']
-        if not apiPassword:
-            apiPassword = config['apiPassword']
-        if not apiPort:
-            apiPort = config['apiPort']
-
-        self.logPath = config.get('logPath', LOGPATH)
-
-        apiAddress = "http://%s:%s@localhost:%s/" %(apiUser, apiPassword,
-                                                  apiPort)
-        self.api = xmlrpclib.ServerProxy(apiAddress)
-
-    def getRawMessages(self):
-        inboxMessages = json.loads(self.api.getAllInboxMessages())['inboxMessages']
-        return inboxMessages
+class Handler(ApiUser):
+    def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
+                       configPath=CONFIGPATH):
+        ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
+        self.logPath = self.config.get('logPath', LOGPATH)
 
     def filterMessages(self, messages):
         addresses = json.loads(self.api.listAddresses())['addresses']

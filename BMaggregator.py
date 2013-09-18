@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import xmlrpclib
-import json
 import time
 import os
 import pickle
 import re
+from api_user import ApiUser
 
 class Message:
     def __init__(self, rawmsg):
@@ -22,21 +21,12 @@ class Message:
         self.firstChars = rawmsg['message'].decode('base64')[:150]
         self.trashed = False
 
-class Aggregator:
+class Aggregator(ApiUser):
     SEPERATOR = u'~'
     CHECKINTERVAL = 3600
-    def __init__(self, apiUser=None, apiPassword=None, apiPort=None):
-        config = loadConfig()
-        if not apiUser:
-            apiUser = config['apiUser']
-        if not apiPassword:
-            apiPassword = config['apiPassword']
-        if not apiPort:
-            apiPort = config['apiPort']
-
-        apiAddress = "http://%s:%s@localhost:%s/" %(apiUser, apiPassword,
-                                                    apiPort)
-        self.api = xmlrpclib.ServerProxy(apiAddress)
+    def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
+                       configPath=None):
+        ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
         self.publishTimeFilePath = 'data/publishTime'
         self.messageFilePath = 'data/messages.pkl'
         self.idFilePath = 'data/ids.pkl'
@@ -48,10 +38,6 @@ class Aggregator:
         self.loadSubjects()
         self.loadAddresses()
         self.addNewMessages()
-
-    def getRawMessages(self):
-        inboxMessages = json.loads(self.api.getAllInboxMessages())['inboxMessages']
-        return inboxMessages
 
     def getMessages(self):
         rawMessages = self.getRawMessages()
@@ -161,15 +147,6 @@ class Aggregator:
             self.addresses[address].append(message)
         else:
             self.addresses[address] = [message]
-
-    def getChanAddresses(self):
-        addresses = json.loads(self.api.listAddresses())['addresses']
-        return dict([(i['address'], i['label'][6:].strip()) for i in addresses
-                      if i['chan']])
-
-    def getSubscriptions(self):
-        addresses = json.loads(self.api.listSubscriptions())['subscriptions']
-        return dict([(i['address'], i['label'].decode('base64')) for i in addresses])
 
     def addressType(self, address):
         chans = self.getChanAddresses()
@@ -492,21 +469,8 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
             if result:
                 time.sleep(result)
 
-def loadConfig():
-    with open('config', 'r') as file:
-        args = {}
-        for line in file.readlines():
-            if not line.strip(): continue
-            key, value = line.split(':')
-            key = key.strip()
-            value = value.strip()
-            args[key]=value
-
-    return args
-
 def main():
-    args = loadConfig()
-    aggregator = Aggregator(**args)
+    aggregator = Aggregator()
     aggregator.loop()
 
 if __name__ == '__main__':
