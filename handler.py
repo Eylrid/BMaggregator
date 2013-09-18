@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import json
 import os
 import sys
 import re
@@ -17,7 +16,7 @@ class Handler(ApiUser):
         self.logger = Logger(logPath)
 
     def filterMessages(self, messages):
-        addresses = json.loads(self.api.listAddresses())['addresses']
+        addresses = self.listAddresses()
         addressDict = dict([(a['address'], a) for a in addresses])
         filteredMessages = []
         for message in messages:

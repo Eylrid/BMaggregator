@@ -21,13 +21,19 @@ class ApiUser:
         inboxMessages = json.loads(self.api.getAllInboxMessages())['inboxMessages']
         return inboxMessages
 
+    def listAddresses(self):
+        return json.loads(self.api.listAddresses())['addresses']
+
+    def listSubscriptions(self):
+        return json.loads(self.api.listSubscriptions())['subscriptions']
+
     def getChanAddresses(self):
-        addresses = json.loads(self.api.listAddresses())['addresses']
+        addresses = self.listAddresses()
         return dict([(i['address'], i['label'][6:].strip()) for i in addresses
                       if i['chan']])
 
     def getSubscriptions(self):
-        addresses = json.loads(self.api.listSubscriptions())['subscriptions']
+        addresses = self.listSubscriptions()
         return dict([(i['address'], i['label'].decode('base64')) for i in addresses])
 
     def getChansAndSubscriptions(self):
