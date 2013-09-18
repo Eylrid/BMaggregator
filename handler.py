@@ -45,6 +45,7 @@ class Handler(ApiUser):
                 self.logger.log('addSubscription result %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
+                    self.updateAddressBittext()
                 elif 'API Error 0016':
                     #Already subscribed
                     self.sendError(address, 'That address is already being tracked.')
@@ -73,6 +74,7 @@ class Handler(ApiUser):
                     self.logger.log('addChan result %s' %result)
                     if 'Added chan' in result:
                         self.confirmChan(address, details)
+                        self.updateAddressBittext()
                     elif 'API Error 0016':
                         #Already tracked
                         self.sendError(address, 'This chan is already being tracked.')
@@ -133,6 +135,14 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
         self.api.sendMessage(toAddress, fromAddress,
                              encodedSubject, encodedMessage)
 
+    def updateAddressBittext(self):
+        self.logger.log('updating address bittext')
+        message = self.listChansAndSubscriptions().encode('utf-8').encode('base64')
+        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        toAddress = 'BM-GtkZoid3xpTUnwxezDfpWtYAfY6vgyHd'
+        subject = 'mod bmaggradrs BMaggregator Tracked Addresses'.encode('base64')
+        print self.api.sendMessage(toAddress, fromAddress, subject, message)
+
     def trashMessage(self, message):
         msgid = message['msgid']
         self.logger.log('trashing %s' % msgid)
@@ -179,6 +189,9 @@ def main():
         print 'all messages:', len(allmsgs)
         print 'direct messages:', len(filteredmsgs)
         handler.processMessages(filteredmsgs)
+    elif arg == 'update':
+        handler = Handler()
+        handler.updateAddressBittext()
 
 if __name__ == '__main__':
     main()
