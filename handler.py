@@ -151,7 +151,8 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
 
     def trashMessage(self, message):
         msgid = message['msgid']
-        self.logger.log('trashing, %s' % msgid)
+        subject = message['subject'].decode('base64')
+        self.logger.log('trashing, %s, %s' %(msgid, subject))
         self.api.trashMessage(msgid)
 
     def parseSubject(self, subject):
