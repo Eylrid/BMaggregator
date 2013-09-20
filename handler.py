@@ -46,7 +46,7 @@ class Handler(ApiUser):
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
                     self.updateAddressBittext()
-                elif 'API Error 0016':
+                elif 'API Error 0016' in result:
                     #Already subscribed
                     self.sendError(address, 'That address is already being tracked.')
                 else:
