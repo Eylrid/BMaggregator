@@ -7,7 +7,5 @@ class Logger:
     def log(self, message):
         print message
         with open(self.logPath, 'a') as file:
-            file.write('\n*************\n%s\n' %time.ctime())
-            file.write(message.encode('utf-8'))
-            file.write('\n')
+            file.write('%s, %s\n' %(time.ctime(), message.encode('utf-8')))
 

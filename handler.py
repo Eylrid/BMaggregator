@@ -33,18 +33,18 @@ class Handler(ApiUser):
         ignoreCount = 0
         for message in messages:
             subject =  message['subject'].decode('base64').decode('utf-8')
-            self.logger.log('processing message with subject ' + subject)
+            self.logger.log('processing message, ' + subject)
             command, details = self.parseSubject(subject)
-            self.logger.log('command, details: %s, %s' %(command, details))
+            self.logger.log('command, %s, %s' %(command, details))
             if command == 'ignore':
                 ignoreCount += 1
                 continue
             elif command == 'subscription':
                 encodedLabel = details.encode('utf-8').encode('base64')
                 address = message['fromAddress']
-                self.logger.log('adding subcription %s as %s' %(address, details))
+                self.logger.log('adding subcription, %s, %s' %(address, details))
                 result = self.api.addSubscription(address, encodedLabel)
-                self.logger.log('addSubscription result %s' %result)
+                self.logger.log('addSubscription result, %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
                     self.updateAddressBittext()
@@ -58,7 +58,7 @@ class Handler(ApiUser):
                 self.sendError(message['fromAddress'], 'No label specified. Please include a label in the subject. Example: "add broadcast Cat Blog"')
             elif command == 'chan':
                 encodedPassphrase = details.encode('utf-8').encode('base64')
-                self.logger.log('adding chan %s' %(details))
+                self.logger.log('adding chan, %s' %(details))
                 address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
                 fromAddress = message['fromAddress']
                 if details.startswith('<') and details.endswith('>') and address != fromAddress:
@@ -73,7 +73,7 @@ class Handler(ApiUser):
                     self.sendError(fromAddress, 'Passphrase doesn\'t match address. Please check the passphrase and also make sure you are sending from the chan address')
                 else:
                     result = self.api.addChan(encodedPassphrase)
-                    self.logger.log('addChan result %s' %result)
+                    self.logger.log('addChan result, %s' %result)
                     if 'Added chan' in result:
                         self.confirmChan(address, details)
                         self.updateAddressBittext()
@@ -86,14 +86,14 @@ class Handler(ApiUser):
             elif command == 'channoname':
                 self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
             elif command == 'btxtmodConf':
-                self.logger.log('bittext mod confirmed: ' + details)
+                self.logger.log('bittext mod confirmed, ' + details)
             else:
-                self.logger.log('UNRECOGNIZED COMMAND! ' + command)
+                self.logger.log('UNRECOGNIZED COMMAND!, ' + command)
                 continue
 
             self.trashMessage(message)
 
-        self.logger.log('ignoreCount: ' + str(ignoreCount))
+        self.logger.log('ignoreCount, ' + str(ignoreCount))
 
     def confirmSubscription(self, toAddress, label):
         fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
@@ -142,7 +142,7 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
                              encodedSubject, encodedMessage)
 
     def updateAddressBittext(self):
-        self.logger.log('updating address bittext')
+        self.logger.log('updating bittext, bmaggradrs')
         message = self.listChansAndSubscriptions().encode('utf-8').encode('base64')
         fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
         toAddress = 'BM-GtkZoid3xpTUnwxezDfpWtYAfY6vgyHd'
@@ -151,7 +151,7 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
 
     def trashMessage(self, message):
         msgid = message['msgid']
-        self.logger.log('trashing %s' % msgid)
+        self.logger.log('trashing, %s' % msgid)
         self.api.trashMessage(msgid)
 
     def parseSubject(self, subject):
@@ -188,16 +188,16 @@ def main():
     else:
         arg = ''
 
+    handler = Handler()
+    handler.logger.log('arg, ' + arg)
+
     if arg == 'newMessage':
-        handler = Handler()
-        handler.logger.log('newMessage')
         allmsgs = handler.getRawMessages()
         filteredmsgs = handler.filterMessages(allmsgs)
         print 'all messages:', len(allmsgs)
         print 'direct messages:', len(filteredmsgs)
         handler.processMessages(filteredmsgs)
     elif arg == 'update':
-        handler = Handler()
         handler.updateAddressBittext()
 
 if __name__ == '__main__':
