@@ -30,12 +30,14 @@ class Handler(ApiUser):
         return filteredMessages
 
     def processMessages(self, messages):
+        ignoreCount = 0
         for message in messages:
             subject =  message['subject'].decode('base64').decode('utf-8')
             self.logger.log('processing message with subject ' + subject)
             command, details = self.parseSubject(subject)
             self.logger.log('command, details: %s, %s' %(command, details))
             if command == 'ignore':
+                ignoreCount += 1
                 continue
             elif command == 'subscription':
                 encodedLabel = details.encode('utf-8').encode('base64')
@@ -83,11 +85,15 @@ class Handler(ApiUser):
                         self.sendError(address)
             elif command == 'channoname':
                 self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
+            elif command == 'btxtmodConf':
+                self.logger.log('bittext mod confirmed: ' + details)
             else:
                 self.logger.log('UNRECOGNIZED COMMAND! ' + command)
                 continue
 
             self.trashMessage(message)
+
+        self.logger.log('ignoreCount: ' + str(ignoreCount))
 
     def confirmSubscription(self, toAddress, label):
         fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
@@ -152,7 +158,8 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
         patterns = [(r'(?i)\s*add\s+broadcast\s+(\S.*?)\s*$', 'subscription'),
                     (r'(?i)\s*add\s+broadcast\s*()$', 'subnolabel'),
                     (r'(?i)\s*add\s+chan\s+(\S.*?)\s*$', 'chan'),
-                    (r'(?i)\s*add\s+chan\s*()$', 'channoname')]
+                    (r'(?i)\s*add\s+chan\s*()$', 'channoname'),
+                    (r'BitText (\w+): MOD confirmation', 'btxtmodConf')]
         for pattern, command in patterns:
             match = re.match(pattern, subject)
             if match:
