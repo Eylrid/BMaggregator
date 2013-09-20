@@ -3,11 +3,11 @@ Commands:
   -Sending address is added to subscriptions.
 -add chan <name>
   -Sending chan is added to subscriptions.
--remove broadcast
+-remove broadcast - Not implemented
   -Sending address is removed from subscriptions. Exception for chans.
--help
+-help - Not implemented
   -reply with a help message
--info
+-info - Not implemented
   -reply with info message
 
 Addresses:
@@ -52,16 +52,15 @@ Todo:
   -New bittexts - DONE
 -Improve descriptions for secondary reports - DONE
 -Fix '-------------' problem - Done
-
--Publish list of tracked addresses
--List new addresses
-
--convert internal strings to unicode?
--Seperate broadcasts and mailing lists
--Add Totals?
+-Publish list of tracked addresses - DONE
 -Get non-tracked messages - DONE
 -Get BMA to respond to commands - DONE
--Release BMA code
--Implement search
+-Release BMA code - DONE
 
-Kickstarter for server?
+-log Aggregator (especially loop!)
+-add addresses and receivedTime to trash log
+-replace hardcoded addresses
+
+-Seperate broadcasts and mailing lists?
+-Implement search?
+
