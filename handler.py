@@ -22,7 +22,7 @@ class Handler(ApiUser):
         for message in messages:
             address = message['toAddress']
             if (address == '[Broadcast subscribers]'
-                or addressDict[address]['chan']):
+                or addressDict.get(address, {'chan':''})['chan']):
                 continue
 
             filteredMessages.append(message)
