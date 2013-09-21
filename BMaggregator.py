@@ -214,30 +214,27 @@ class Aggregator(ApiUser):
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getMainReport(startTime, endTime).encode('utf-8')
 
-        subject = 'BMaggregator Report'.encode('base64')
+        subject = 'BMaggregator Report'
         address = self.mainAddress
-        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
-        self.logger.log('broadcast, Main, %s' %result)
+        self.sendBroadcast(address, subject, report)
 
     def broadcastChanReport(self, report=None, startTime=None, endTime=None):
         if report==None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
-        subject = 'BMaggregator Chan Report'.encode('base64')
+        subject = 'BMaggregator Chan Report'
         address = self.chanAddress
-        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
-        self.logger.log('Broadcast, Chan, %s' %result)
+        self.sendBroadcast(address, subject, report)
 
     def broadcastBroadcastReport(self, report=None, startTime=None, endTime=None):
         if report==None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8')
 
-        subject = 'BMaggregator Broadcast Report'.encode('base64')
+        subject = 'BMaggregator Broadcast Report'
         address = self.broadcastAddress
-        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
-        self.logger.log('Broadcast, Broadcast, %s' %result)
+        self.sendBroadcast(address, subject, report)
 
     def updateMainBittext(self, report=None, startTime=None, endTime=None):
         if report == None:

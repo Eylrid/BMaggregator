@@ -94,49 +94,23 @@ class Handler(ApiUser):
 
     def confirmSubscription(self, toAddress, label):
         fromAddress = self.mainAddress
-        rawSubject = 'Broadcast Add Confirmation'
-        encodedSubject = rawSubject.encode('base64')
-        rawMessage = "Address %s added to BMaggregator as a broadcast with label '%s'" %(toAddress, label)
-        encodedMessage = rawMessage.encode('utf-8').encode('base64')
-        logEntry = '''sending broadcast confirmation
-toAddress:%s
-fromAddress:%s
-subject:%s
-message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.logger.log(logEntry)
-        self.api.sendMessage(toAddress, fromAddress,
-                             encodedSubject, encodedMessage)
+        subject = 'Broadcast Add Confirmation'
+        message = "Address %s added to BMaggregator as a broadcast with label '%s'" %(toAddress, label)
+        self.sendMessage(toAddress, fromAddress, subject, message)
 
     def confirmChan(self, toAddress, label):
         fromAddress = self.mainAddress
-        rawSubject = 'Chan Add Confirmation'
-        encodedSubject = rawSubject.encode('base64')
-        rawMessage = "Added chan %s with address %s to BMaggregator." %(label, toAddress)
-        encodedMessage = rawMessage.encode('utf-8').encode('base64')
-        logEntry = '''sending chan confirmation
-toAddress:%s
-fromAddress:%s
-subject:%s
-message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.logger.log(logEntry)
-        self.api.sendMessage(toAddress, fromAddress,
-                             encodedSubject, encodedMessage)
+        subject = 'Chan Add Confirmation'
+        message = "Added chan %s with address %s to BMaggregator." %(label, toAddress)
+        self.sendMessage(toAddress, fromAddress, subject, message)
 
-    def sendError(self, toAddress, rawMessage=None):
+    def sendError(self, toAddress, message=None):
         fromAddress = self.mainAddress
-        rawSubject = 'Error'
-        encodedSubject = rawSubject.encode('base64')
-        if rawMessage == None:
-            rawMessage = 'There was an unknown error processing your request.'
-        encodedMessage = rawMessage.encode('utf-8').encode('base64')
-        logEntry = '''sending error message
-toAddress:%s
-fromAddress:%s
-subject:%s
-message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
-        self.logger.log(logEntry)
-        self.api.sendMessage(toAddress, fromAddress,
-                             encodedSubject, encodedMessage)
+        subject = 'Error'
+        if message == None:
+            message = 'There was an unknown error processing your request.'
+        self.sendMessage(toAddress, fromAddress,
+                             subject, message)
 
     def updateAddressBittext(self):
         self.logger.log('updating bittext, bmaggradrs')

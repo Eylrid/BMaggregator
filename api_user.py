@@ -70,6 +70,13 @@ class ApiUser:
 
         return lst
 
+    def sendBroadcast(self, fromAddress, subject, message):
+        encodedSubject = subject.encode('base64')
+        encodedMessage = message.encode('base64')
+        self.logger.log('Sending Broadcast, %s, %s'%(fromAddress, subject))
+        result = self.api.sendBroadcast(fromAddress, encodedSubject, encodedMessage)
+        self.logger.log('Api Result, %s'%result)
+
     def sendMessage(self, toAddress, fromAddress, subject, message):
         '''Send a message. subject and message should be raw'''
         encodedSubject = subject.encode('base64')
