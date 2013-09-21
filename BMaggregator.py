@@ -221,7 +221,7 @@ class Aggregator(ApiUser):
         subject = 'BMaggregator Report'.encode('base64')
         address = self.mainAddress
         result = self.api.sendBroadcast(address, subject, report)
-        self.logger.log('broadcast', 'Main', result)
+        self.logger.log('broadcast, Main, %s' %result)
 
     def broadcastChanReport(self, report=None, startTime=None, endTime=None):
         if report==None:
@@ -231,7 +231,7 @@ class Aggregator(ApiUser):
         subject = 'BMaggregator Chan Report'.encode('base64')
         address = self.chanAddress
         result = self.api.sendBroadcast(address, subject, report)
-        self.logger.log('Broadcast', 'Chan', result)
+        self.logger.log('Broadcast, Chan, %s' %result)
 
     def broadcastBroadcastReport(self, report=None, startTime=None, endTime=None):
         if report==None:
@@ -241,7 +241,7 @@ class Aggregator(ApiUser):
         subject = 'BMaggregator Broadcast Report'.encode('base64')
         address = self.broadcastAddress
         result = self.api.sendBroadcast(address, subject, report)
-        self.logger.log('Broadcast', 'Broadcast', result)
+        self.logger.log('Broadcast, Broadcast, %s' %result)
 
     def updateMainBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
