@@ -1,3 +1,8 @@
 apiUser:username
 apiPassword:password
 apiPort:8442
+logPath:log
+mainAddress:BM-main
+chanAddress:BM-chan
+broadcastAddress:BM-broadcast
+bittextAddress:BM-bittext
