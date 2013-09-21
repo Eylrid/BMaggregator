@@ -468,16 +468,20 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
         return startTime, endTime
 
     def check(self, addNewMessages=True):
+        self.logger.log('check')
         nextPublishTime = self.publishTime + 86400
+        print 'nextPublishTime', nextPublishTime
         now = time.time()
         if addNewMessages:
             self.addNewMessages()
 
         if now >= nextPublishTime:
             self.publishAllReports()
-            print 'Reports Published'
+            nextPublishTime = self.publishTime + 86400
 
-        timeToNextCheck = Aggregator.CHECKINTERVAL-time.time()%Aggregator.CHECKINTERVAL
+        timeToNextHour = Aggregator.CHECKINTERVAL-time.time()%Aggregator.CHECKINTERVAL
+        timeToNextPublish = nextPublishTime - now
+        timeToNextCheck = min((timeToNextHour,timeToNextPublish))
         return timeToNextCheck
 
     def loop(self):
