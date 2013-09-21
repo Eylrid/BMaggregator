@@ -56,6 +56,10 @@ Todo:
 -Get non-tracked messages - DONE
 -Get BMA to respond to commands - DONE
 -Release BMA code - DONE
+-replace hardcoded addresses - DONE
+  -BMaggregator.py - DONE
+  -handler.py - DONE
+-Fix duplicated message adding - DONE
 
 -update text: !!FROG!!
   -bmaggradrs
@@ -63,7 +67,6 @@ Todo:
   -deprecation notice
 -log Aggregator (especially loop!)
 -add addresses and receivedTime to trash log
--replace hardcoded addresses
 
 -Seperate broadcasts and mailing lists?
 -Implement search?
