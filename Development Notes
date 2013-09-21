@@ -57,6 +57,10 @@ Todo:
 -Get BMA to respond to commands - DONE
 -Release BMA code - DONE
 
+-update text: !!FROG!!
+  -bmaggradrs
+  -bitcoin donation address
+  -deprecation notice
 -log Aggregator (especially loop!)
 -add addresses and receivedTime to trash log
 -replace hardcoded addresses
