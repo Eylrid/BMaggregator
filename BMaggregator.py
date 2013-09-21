@@ -27,10 +27,6 @@ class Aggregator(ApiUser):
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=None):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
-        self.mainAddress = self.config['mainAddress']
-        self.chanAddress = self.config['chanAddress']
-        self.broadcastAddress = self.config['broadcastAddress']
-        self.bittextAddress = self.config['bittextAddress']
         self.publishTimeFilePath = 'data/publishTime'
         self.messageFilePath = 'data/messages.pkl'
         self.idFilePath = 'data/ids.pkl'

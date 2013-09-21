@@ -4,3 +4,5 @@ apiPassword:password
 apiPort:port
 mainAddress:BM-main
 bittextAddress:BM-bittext
+chanAddress:BM-chan
+broadcastAddress:BM-broadcast

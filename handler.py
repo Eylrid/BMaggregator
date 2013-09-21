@@ -11,8 +11,6 @@ class Handler(ApiUser):
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=CONFIGPATH):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
-        self.mainAddress = self.config['mainAddress']
-        self.bittextAddress = self.config['bittextAddress']
 
     def filterMessages(self, messages):
         addresses = self.listAddresses()

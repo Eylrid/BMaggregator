@@ -9,6 +9,12 @@ class ApiUser:
         self.config = loadConfig(configPath)
         logPath = self.config['logPath']
         self.logger = Logger(logPath)
+
+        self.mainAddress = self.config['mainAddress']
+        self.bittextAddress = self.config['bittextAddress']
+        self.chanAddress = self.config['chanAddress']
+        self.broadcastAddress = self.config['broadcastAddress']
+
         if not apiUser:
             apiUser = self.config['apiUser']
         if not apiPassword:
