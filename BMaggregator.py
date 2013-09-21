@@ -459,10 +459,12 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
 
         return startTime, endTime
 
-    def check(self):
+    def check(self, addNewMessages=True):
         nextPublishTime = self.publishTime + 86400
         now = time.time()
-        self.addNewMessages()
+        if addNewMessages:
+            self.addNewMessages()
+
         if now >= nextPublishTime:
             self.publishAllReports()
             print 'Reports Published'

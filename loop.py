@@ -4,7 +4,7 @@ import time
 
 def check():
     bma = Aggregator()
-    return bma.check()
+    return bma.check(addNewMessages=False)
 
 def loop():
     while True:
