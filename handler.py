@@ -140,11 +140,9 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
 
     def updateAddressBittext(self):
         self.logger.log('updating bittext, bmaggradrs')
-        message = self.listChansAndSubscriptions().encode('utf-8').encode('base64')
-        fromAddress = self.mainAddress
-        toAddress = self.bittextAddress
-        subject = 'mod bmaggradrs BMaggregator Tracked Addresses'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, message)
+        message = self.listChansAndSubscriptions().encode('utf-8')
+        self.updateBittext('bmaggradrs', 'BMaggregator Tracked Addresses',
+                           message)
 
     def trashMessage(self, message):
         msgid = message['msgid']

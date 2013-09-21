@@ -190,21 +190,21 @@ class Aggregator(ApiUser):
 
     def publishMainReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        report = self.getMainReport(startTime, endTime).encode('utf-8').encode('base64')
+        report = self.getMainReport(startTime, endTime).encode('utf-8')
         self.broadcastMainReport(report, startTime, endTime)
         self.updateMainBittext(report, startTime, endTime)
         self.saveReport(report, startTime, endTime, 'lastreport')
 
     def publishChanReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        report = self.getChanSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
+        report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
         self.broadcastChanReport(report, startTime, endTime)
         self.updateChanBittext(report, startTime, endTime)
         self.saveReport(report, startTime, endTime, 'lastChanReport')
 
     def publishBroadcastReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
+        report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8')
         self.broadcastBroadcastReport(report, startTime, endTime)
         self.updateBroadcastBittext(report, startTime, endTime)
         self.saveReport(report, startTime, endTime, 'lastBroadcastReport')
@@ -212,88 +212,77 @@ class Aggregator(ApiUser):
     def broadcastMainReport(self, report=None, startTime=None, endTime=None):
         if report==None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getMainReport(startTime, endTime).encode('utf-8').encode('base64')
+            report = self.getMainReport(startTime, endTime).encode('utf-8')
 
         subject = 'BMaggregator Report'.encode('base64')
         address = self.mainAddress
-        result = self.api.sendBroadcast(address, subject, report)
+        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
         self.logger.log('broadcast, Main, %s' %result)
 
     def broadcastChanReport(self, report=None, startTime=None, endTime=None):
         if report==None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
+            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
         subject = 'BMaggregator Chan Report'.encode('base64')
         address = self.chanAddress
-        result = self.api.sendBroadcast(address, subject, report)
+        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
         self.logger.log('Broadcast, Chan, %s' %result)
 
     def broadcastBroadcastReport(self, report=None, startTime=None, endTime=None):
         if report==None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
+            report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8')
 
         subject = 'BMaggregator Broadcast Report'.encode('base64')
         address = self.broadcastAddress
-        result = self.api.sendBroadcast(address, subject, report)
+        result = self.api.sendBroadcast(address, subject, report.encode('base64'))
         self.logger.log('Broadcast, Broadcast, %s' %result)
 
     def updateMainBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getMainReport(startTime, endTime).encode('utf-8').encode('base64')
-
-        fromAddress = self.mainAddress
-        toAddress = self.bittextAddress
+            report = self.getMainReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        subject = 'mod dOe7aAIVnZ BMaggregator Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('dOe7aAIVnZ', 'BMaggregator Report', report)
 
         #new bittext
-        subject = 'mod bmaggrmain BMaggregator Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('bmaggrmain', 'BMaggregator Report', report)
 
     def updateChanBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
-
-        fromAddress = self.mainAddress
-        toAddress = self.bittextAddress
+            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        subject = 'mod N3Z4fiuSFW BMaggregator Chan Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('N3Z4fiuSFW', 'BMaggregator Chan Report',
+                            report)
 
         #new bittext
-        subject = 'mod bmaggrchan BMaggregator Chan Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('bmaggrchan', 'BMaggregator Chan Report',
+                            report)
 
     def updateBroadcastBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8').encode('base64')
-
-        fromAddress = self.mainAddress
-        toAddress = self.bittextAddress
+            report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        subject = 'mod HqdIvnnxI1 BMaggregator Broadcast Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('HqdIvnnxI1', 'BMaggregator Broadcast Report',
+                            report)
 
         #new bittext
-        subject = 'mod bmaggrsubs BMaggregator Broadcast Report'.encode('base64')
-        print self.api.sendMessage(toAddress, fromAddress, subject, report)
+        self.updateBittext('bmaggrsubs', 'BMaggregator Broadcast Report',
+                            report)
 
     def saveReport(self, report=None, startTime=None, endTime=None, filename='report'):
         if report == None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-            report = self.getMainReport(startTime, endTime).encode('utf-8').encode('base64')
+            report = self.getMainReport(startTime, endTime).encode('utf-8')
 
         with open(filename, 'w') as file:
-            file.write(report.decode('base64'))
+            file.write(report)
 
     def getMainReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)

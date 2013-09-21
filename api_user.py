@@ -70,6 +70,22 @@ class ApiUser:
 
         return lst
 
+    def sendMessage(self, toAddress, fromAddress, subject, message):
+        '''Send a message. subject and message should be raw'''
+        encodedSubject = subject.encode('base64')
+        encodedMessage = message.encode('base64')
+        self.logger.log('Sending Message, %s, %s, %s'
+                         %(toAddress, fromAddress, subject))
+        result = self.api.sendMessage(toAddress, fromAddress, encodedSubject, encodedMessage)
+        self.logger.log('Api Result, %s'%result)
+
+    def updateBittext(self, id, subject, message):
+        self.logger.log('Updating Bittext, %s, %s' %(id, subject))
+        fromAddress = self.mainAddress
+        toAddress = self.bittextAddress
+        fullSubject = 'mod %s %s' %(id, subject)
+        self.sendMessage(toAddress, fromAddress, fullSubject, message)
+
 
 def loadConfig(configPath=None):
     if not configPath:
