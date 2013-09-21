@@ -12,6 +12,8 @@ class Handler(ApiUser):
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=CONFIGPATH):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
+        self.mainAddress = self.config['mainAddress']
+        self.bittextAddress = self.config['bittextAddress']
         logPath = self.config.get('logPath', LOGPATH)
         self.logger = Logger(logPath)
 
@@ -96,7 +98,7 @@ class Handler(ApiUser):
         self.logger.log('ignoreCount, ' + str(ignoreCount))
 
     def confirmSubscription(self, toAddress, label):
-        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        fromAddress = self.mainAddress
         rawSubject = 'Broadcast Add Confirmation'
         encodedSubject = rawSubject.encode('base64')
         rawMessage = "Address %s added to BMaggregator as a broadcast with label '%s'" %(toAddress, label)
@@ -111,7 +113,7 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
                              encodedSubject, encodedMessage)
 
     def confirmChan(self, toAddress, label):
-        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        fromAddress = self.mainAddress
         rawSubject = 'Chan Add Confirmation'
         encodedSubject = rawSubject.encode('base64')
         rawMessage = "Added chan %s with address %s to BMaggregator." %(label, toAddress)
@@ -126,7 +128,7 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
                              encodedSubject, encodedMessage)
 
     def sendError(self, toAddress, rawMessage=None):
-        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
+        fromAddress = self.mainAddress
         rawSubject = 'Error'
         encodedSubject = rawSubject.encode('base64')
         if rawMessage == None:
@@ -144,8 +146,8 @@ message:%s''' %(toAddress, fromAddress, rawSubject, rawMessage)
     def updateAddressBittext(self):
         self.logger.log('updating bittext, bmaggradrs')
         message = self.listChansAndSubscriptions().encode('utf-8').encode('base64')
-        fromAddress = 'BM-2D7Wwe3PNCEM4W5q58r19Xn9P3azHf95rN'
-        toAddress = 'BM-GtkZoid3xpTUnwxezDfpWtYAfY6vgyHd'
+        fromAddress = self.mainAddress
+        toAddress = self.bittextAddress
         subject = 'mod bmaggradrs BMaggregator Tracked Addresses'.encode('base64')
         print self.api.sendMessage(toAddress, fromAddress, subject, message)
 

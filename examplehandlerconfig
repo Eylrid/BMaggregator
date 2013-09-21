@@ -2,3 +2,5 @@ logPath:/home/user/BMaggregator/handlerLog
 apiUser:username
 apiPassword:password
 apiPort:port
+mainAddress:BM-main
+bittextAddress:BM-bittext
