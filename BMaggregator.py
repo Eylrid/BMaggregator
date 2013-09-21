@@ -5,8 +5,6 @@ import os
 import pickle
 import re
 from api_user import ApiUser
-from logger import Logger
-LOGPATH = 'log'
 
 class Message:
     def __init__(self, rawmsg):
@@ -29,8 +27,6 @@ class Aggregator(ApiUser):
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=None):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
-        logPath = self.config.get('logPath', LOGPATH)
-        self.logger = Logger(logPath)
         self.mainAddress = self.config['mainAddress']
         self.chanAddress = self.config['chanAddress']
         self.broadcastAddress = self.config['broadcastAddress']

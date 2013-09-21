@@ -1,11 +1,14 @@
 import xmlrpclib
 import json
 import time
+from logger import Logger
 
 class ApiUser:
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
                        configPath=None):
         self.config = loadConfig(configPath)
+        logPath = self.config['logPath']
+        self.logger = Logger(logPath)
         if not apiUser:
             apiUser = self.config['apiUser']
         if not apiPassword:

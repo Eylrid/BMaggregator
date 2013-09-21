@@ -5,7 +5,6 @@ import sys
 import re
 from api_user import ApiUser
 from logger import Logger
-LOGPATH = 'handlerLog'
 CONFIGPATH = 'handlerconfig'
 
 class Handler(ApiUser):
@@ -14,8 +13,6 @@ class Handler(ApiUser):
         ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
         self.mainAddress = self.config['mainAddress']
         self.bittextAddress = self.config['bittextAddress']
-        logPath = self.config.get('logPath', LOGPATH)
-        self.logger = Logger(logPath)
 
     def filterMessages(self, messages):
         addresses = self.listAddresses()
