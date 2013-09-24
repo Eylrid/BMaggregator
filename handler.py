@@ -106,7 +106,7 @@ class Handler(ApiUser):
     def confirmChan(self, toAddress, label):
         fromAddress = self.mainAddress
         subject = 'Chan Add Confirmation'
-        message = "Added chan %s with address %s to BMaggregator." %(label, toAddress)
+        message = "Added chan %s with address %s to BMaggregator. See bittext.ch/bmaggrinfo for more information." %(label, toAddress)
         self.sendMessage(toAddress, fromAddress, subject, message)
 
     def sendError(self, toAddress, message=None):
