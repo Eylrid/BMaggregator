@@ -70,6 +70,16 @@ class ApiUser:
 
         return lst
 
+    def decodeAddress(self, address):
+        result = self.api.decodeAddress(address)
+        print result
+        decodedAddress = json.loads(result)
+        status = decodedAddress['status']
+        addressVersion = decodedAddress['addressVersion']
+        streamNumber = decodedAddress['streamNumber']
+        ripe = decodedAddress['ripe']
+        return status, addressVersion, streamNumber, ripe
+
     def sendBroadcast(self, fromAddress, subject, message):
         encodedSubject = subject.encode('base64')
         encodedMessage = message.encode('base64')

@@ -56,20 +56,25 @@ class Handler(ApiUser):
             elif command == 'chan':
                 encodedPassphrase = details.encode('utf-8').encode('base64')
                 self.logger.log('adding chan, %s' %(details))
-                address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
                 fromAddress = message['fromAddress']
+                status, addressVersion, streamNumber, ripe = self.decodeAddress(fromAddress)
+                address = self.api.getDeterministicAddress(encodedPassphrase,
+                                                           addressVersion,
+                                                           streamNumber)
                 if details.startswith('<') and details.endswith('>') and address != fromAddress:
                     self.logger.log('striping <>')
                     details = details[1:-1]
                     encodedPassphrase = details.encode('utf-8').encode('base64')
-                    address = self.api.getDeterministicAddress(encodedPassphrase,3,1)
+                    address = self.api.getDeterministicAddress(encodedPassphrase,
+                                                               addressVersion,
+                                                               streamNumber)
 
                 if address != fromAddress:
                     #message sent from address not belonging to chan
                     self.logger.log('message sent from address not belonging to chan')
                     self.sendError(fromAddress, 'Passphrase doesn\'t match address. Please check the passphrase and also make sure you are sending from the chan address')
                 else:
-                    result = self.api.addChan(encodedPassphrase)
+                    result = self.api.addChan(encodedPassphrase, fromAddress)
                     self.logger.log('addChan result, %s' %result)
                     if 'Added chan' in result:
                         self.confirmChan(address, details)
