@@ -1,7 +1,7 @@
 *.pyc
 PyBitmessage
 *data*
-*report*
+last*
 ignore
 config
 *~
