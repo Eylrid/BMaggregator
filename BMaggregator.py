@@ -283,8 +283,7 @@ class Aggregator(ApiUser):
 
     def getMainReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        startTimeString = time.asctime(time.gmtime(startTime)).decode('utf-8') + u' UTC'
-        endTimeString = time.asctime(time.gmtime(endTime)).decode('utf-8') + u' UTC'
+        startTimeString, endTimeString = self.getTimeStrings(startTime, endTime)
 
         report = u'''Activity of known chans and broadcasts
 ======================================
@@ -317,8 +316,7 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
                 if receivedTime >= hourStart and receivedTime < hourEnd:
                     count += 1
 
-            hourStartString = time.asctime(time.gmtime(hourStart)) + ' UTC'
-            hourEndString = time.asctime(time.gmtime(hourEnd)) + ' UTC'
+            hourStartString, hourEndString = self.getTimeStrings(hourStart, hourEnd)
 
             report += '%d\t%s\t%s\n' %(count, hourStartString, hourEndString)
 
@@ -362,8 +360,7 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
 
     def getChanSubjectHeader(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        startTimeString = time.asctime(time.gmtime(startTime)) + ' UTC'
-        endTimeString = time.asctime(time.gmtime(endTime)) + ' UTC'
+        startTimeString, endTimeString = self.getTimeStrings(startTime, endTime)
 
         return u'''BMaggregator Chan Subject Report
 ================================
@@ -418,8 +415,7 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
 
     def getBroadcastSubjectHeader(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        startTimeString = time.asctime(time.gmtime(startTime)) + ' UTC'
-        endTimeString = time.asctime(time.gmtime(endTime)) + ' UTC'
+        startTimeString, endTimeString = self.getTimeStrings(startTime, endTime)
 
         return u'''BMaggregator Broadcast Subject Report
 =====================================
@@ -444,6 +440,12 @@ More info about BMaggregator can be found at bittext.ch/bmaggrinfo
             startTime = endTime - 86400
 
         return startTime, endTime
+
+    def getTimeStrings(self, startTime=None, endTime=None):
+        startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
+        startTimeString = time.asctime(time.gmtime(startTime)) + ' UTC'
+        endTimeString = time.asctime(time.gmtime(endTime)) + ' UTC'
+        return startTimeString, endTimeString
 
     def check(self, addNewMessages=True):
         self.logger.log('check')
