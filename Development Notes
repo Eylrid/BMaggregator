@@ -61,11 +61,13 @@ Todo:
   -handler.py - DONE
 -Fix duplicated message adding - DONE
 
--update text: !!FROG!!
-  -bmaggradrs
-  -bitcoin donation address
+-update text:
+  -bmaggradrs - DONE
+  -bitcoin donation address - DONE
   -deprecation notice
--log Aggregator (especially loop!)
+-log Aggregator
+  -loop - DONE
+  -other stuff
 -add addresses and receivedTime to trash log
 
 -Seperate broadcasts and mailing lists?
