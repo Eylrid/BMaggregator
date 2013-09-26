@@ -79,7 +79,7 @@ class Handler(ApiUser):
                     if 'Added chan' in result:
                         self.confirmChan(address, details)
                         self.updateAddressBittext()
-                    elif 'API Error 0016' in result:
+                    elif 'API Error 0016' in result or 'API Error 0024' in result:
                         #Already tracked
                         self.sendError(address, 'This chan is already being tracked.')
                     else:
