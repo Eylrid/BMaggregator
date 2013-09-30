@@ -9,6 +9,7 @@ au = ApiUser()
 labels = au.getChanLabels()
 
 for label in labels:
+    print 'checking', label
     currentAddresses = labels[label]
     encodedPassphrase = label.encode('utf-8').encode('base64')
     for addressVersion in ADDRESSVERSIONS:
@@ -16,5 +17,5 @@ for label in labels:
                                                            addressVersion,
                                                            STREAMNUMBER)
         if address not in currentAddresses:
-            print au.api.addChan(encodedPassphrase, addressVersion, STREAMNUMBER)
-
+            result = au.api.addChan(encodedPassphrase, addressVersion, STREAMNUMBER)
+            print result.encode('utf-8')
