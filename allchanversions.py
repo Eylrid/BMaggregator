@@ -10,7 +10,7 @@ labels = au.getChanLabels()
 
 for label in labels:
     currentAddresses = labels[label]
-    encodedPassphrase = label.encode('base64')
+    encodedPassphrase = label.encode('utf-8').encode('base64')
     for addressVersion in ADDRESSVERSIONS:
         address = au.api.getDeterministicAddress(encodedPassphrase,
                                                            addressVersion,
