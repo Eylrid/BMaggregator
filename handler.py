@@ -3,7 +3,7 @@
 import os
 import sys
 import re
-from api_user import ApiUser
+from api_user import *
 from logger import Logger
 CONFIGPATH = 'handlerconfig'
 
@@ -74,17 +74,25 @@ class Handler(ApiUser):
                     self.logger.log('message sent from address not belonging to chan')
                     self.sendError(fromAddress, 'Passphrase doesn\'t match address. Please check the passphrase and also make sure you are sending from the chan address')
                 else:
-                    result = self.api.addChan(encodedPassphrase, fromAddress)
-                    self.logger.log('addChan result, %s' %result)
-                    if 'Added chan' in result:
+                    added = False
+                    for addressVersion in ADDRESSVERSIONS:
+                        result = self.api.addChan(encodedPassphrase, addressVersion,
+                                                  streamNumber)
+                        self.logger.log('addChan result, %s' %result)
+                        if 'Added chan' in result:
+                            added = True
+                        elif 'API Error 0016' in result or 'API Error 0024' in result:
+                            #Already tracked
+                            self.sendError(address, 'This chan is already being tracked.')
+                            break
+                        else:
+                            #unknown error
+                            self.sendError(address)
+                            break
+
+                    if added:
                         self.confirmChan(address, details)
                         self.updateAddressBittext()
-                    elif 'API Error 0016' in result or 'API Error 0024' in result:
-                        #Already tracked
-                        self.sendError(address, 'This chan is already being tracked.')
-                    else:
-                        #unknown error
-                        self.sendError(address)
             elif command == 'channoname':
                 self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
             elif command == 'btxtmodConf':

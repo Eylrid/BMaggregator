@@ -2,6 +2,7 @@ import xmlrpclib
 import json
 import time
 from logger import Logger
+ADDRESSVERSIONS = (3,4)
 
 class ApiUser:
     def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
@@ -37,9 +38,25 @@ class ApiUser:
         return json.loads(self.api.listSubscriptions())['subscriptions']
 
     def getChanAddresses(self):
+        '''return a dict mapping chan address to label'''
         addresses = self.listAddresses()
         return dict([(i['address'], i['label'][6:].strip()) for i in addresses
                       if i['chan']])
+
+    def getChanLabels(self):
+        '''return a dict mapping chan labels to addresses'''
+        addresses = [i for i in self.listAddresses() if i['chan']]
+        addresses.reverse() #list newer addresses first
+        labels = {}
+        for i in addresses:
+            label = i['label'][6:].strip()
+            address = i['address']
+            if label in labels:
+                labels[label].append(address)
+            else:
+                labels[label] = [address]
+
+        return labels
 
     def getSubscriptions(self):
         addresses = self.listSubscriptions()

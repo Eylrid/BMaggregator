@@ -177,6 +177,21 @@ class Aggregator(ApiUser):
 
         return counts
 
+    def getLabelCounts(self, labels, startTime=0, endTime=''):
+        counts = []
+        for label in labels:
+            labelCount = 0
+            addresses = labels[label]
+            for address in labels[label]:
+                if address not in self.addresses: continue
+                messages = self.getMessagesInTimeFrame(self.addresses[address],
+                                                          startTime, endTime)
+                labelCount += len(messages)
+            if labelCount:
+                counts.append((labelCount, addresses, label))
+
+        return counts
+
     def publishAllReports(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
 
@@ -289,9 +304,9 @@ class Aggregator(ApiUser):
                                startTimeString=startTimeString,
                                endTimeString=endTimeString, **self.config)
 
-        report += u'\n\nChans:\n======\n'
+        report += u'\n\nChans:\n======\n\n'
         report += self.getRawChanSubjectReport(startTime, endTime)
-        report += u'\n\nBroadcasts:\n===========\n'
+        report += u'\nBroadcasts:\n===========\n\n'
         report += self.getRawBroadcastSubjectReport(startTime, endTime)
 
         return report
@@ -316,23 +331,33 @@ class Aggregator(ApiUser):
 
     def getChanSubjectReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        return (self.getChanSubjectHeader(startTime, endTime) +
+        return (self.getChanSubjectHeader(startTime, endTime) + u'\n\n' +
                 self.getRawChanSubjectReport(startTime, endTime))
 
-    def getRawChanSubjectReport(self, startTime=None, endTime=None):
+    def getRawChanSubjectReport(self, startTime=None, endTime=None,
+                                numberOfSubjectsToList=20):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
         report = u''
 
-        chans = self.getMessageCounts(self.getChanAddresses(), startTime, endTime)
+        chans = self.getLabelCounts(self.getChanLabels(), startTime, endTime)
         chans.sort(reverse = True)
 
-        for count, address, label in chans:
-            chanHeader = u'%d    %s    %s' %(count, address, label)
-            lines = Aggregator.SEPERATOR*len(chanHeader)
-            report += u'\n%s\n%s\n' %(chanHeader, lines)
+        for count, addresses, label in chans:
+            chanSection = u'Name: %s\n' %label
+            chanSection += Aggregator.SEPERATOR*(6+len(label))+u'\n'
+            chanSection += u'Addresses:\n'
 
-            messages = self.getMessagesInTimeFrame(self.addresses[address],
-                                                   startTime, endTime)
+            for address in addresses:
+                chanSection += u'  %s\n' %address
+
+            chanSection += u'\nMessages Seen: %d\n\n' %count
+
+            messages = []
+            for address in addresses:
+                messages += self.getMessagesInTimeFrame(
+                                self.addresses.get(address, []),
+                                startTime, endTime)
+
             subjects = set([msg.subject for msg in messages])
             subjectCounts = []
             for subject in subjects:
@@ -340,13 +365,21 @@ class Aggregator(ApiUser):
                              if msg.subject==subject])
                 subjectCounts.append((count, subject))
 
-            subjectCounts.sort(key = lambda x: x[1])
+            subjectCounts.sort(key = lambda x: x[1].lower())
             subjectCounts.sort(key = lambda x: x[0], reverse=True)
 
-            for count, subject in subjectCounts:
-                report += u'%d\t%s\n' %(count, subject)
+            subjectHeader = ''
+            if len(subjectCounts) > numberOfSubjectsToList:
+                subjectCounts = subjectCounts[:numberOfSubjectsToList]
+                subjectHeader += u'Top %d ' %numberOfSubjectsToList
 
-            report += u'\n'
+            subjectHeader += u'Subjects (number of messages, subject):\n'
+            chanSection += subjectHeader
+
+            for count, subject in subjectCounts:
+                chanSection += u'  %d\t%s\n' %(count, subject)
+
+            report += chanSection + u'\n\n'
 
         return report
 
@@ -361,10 +394,11 @@ class Aggregator(ApiUser):
 
     def getBroadcastSubjectReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
-        return (self.getBroadcastSubjectHeader(startTime, endTime) +
+        return (self.getBroadcastSubjectHeader(startTime, endTime) + u'\n\n' +
                 self.getRawBroadcastSubjectReport(startTime, endTime))
 
-    def getRawBroadcastSubjectReport(self, startTime=None, endTime=None):
+    def getRawBroadcastSubjectReport(self, startTime=None, endTime=None,
+                                     numberOfSubjectsToList = 20):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
         report = u''
 
@@ -373,9 +407,9 @@ class Aggregator(ApiUser):
         broadcasts.sort(reverse = True)
 
         for count, address, label in broadcasts:
-            broadcastHeader = u'%d    %s    %s' %(count, address, label)
-            lines = Aggregator.SEPERATOR*len(broadcastHeader)
-            report += u'\n%s\n%s\n' %(broadcastHeader, lines)
+            broadcastSection = u'Name: %s\n' %label
+            broadcastSection += Aggregator.SEPERATOR*(6+len(label))+u'\n'
+            broadcastSection += u'Address: %s\n\n' %address
 
             messages = self.getMessagesInTimeFrame(self.addresses[address],
                                                    startTime, endTime)
@@ -389,10 +423,18 @@ class Aggregator(ApiUser):
             subjectCounts.sort(key = lambda x: x[1])
             subjectCounts.sort(key = lambda x: x[0], reverse=True)
 
-            for count, subject in subjectCounts:
-                report += u'%d\t%s\n' %(count, subject)
+            subjectHeader = ''
+            if len(subjectCounts) > numberOfSubjectsToList:
+                subjectCounts = subjectCounts[:numberOfSubjectsToList]
+                subjectHeader += u'Top %d ' %numberOfSubjectsToList
 
-            report += u'\n'
+            subjectHeader += u'Subjects (number of messages, subject):\n'
+            broadcastSection += subjectHeader
+
+            for count, subject in subjectCounts:
+                broadcastSection += u'  %d\t%s\n' %(count, subject)
+
+            report += broadcastSection + u'\n\n'
 
         return report
 
