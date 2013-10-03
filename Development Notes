@@ -67,15 +67,13 @@ Todo:
 -Seperate ApiUser and subclasses - DONE
 -Only update bmaggradrs once per handler call - DONE
 -Add info to bmaggradrs - DONE
-
 -update text:
   -bmaggradrs - DONE
   -bitcoin donation address - DONE
-  -deprecation notice
-
+  -deprecation notice - DONE
 -log Aggregator
   -loop - DONE
-  -other stuff
+  -other stuff - DONE
 
 -add addresses, receivedTime, and beginning of message body to trash log
 

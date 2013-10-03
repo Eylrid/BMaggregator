@@ -106,6 +106,7 @@ class Aggregator(BMAMaster):
                 self.addMessageToAddress(message)
 
     def saveEverything(self):
+        self.logger.log('saving')
         saveData = [(self.messageFilePath, self.messages, True),
                     (self.idFilePath, self.ids, True),
                     (self.subjectFilePath, self.subjects, True),
@@ -207,6 +208,7 @@ class Aggregator(BMAMaster):
         report = self.getMainReport(startTime, endTime).encode('utf-8')
         self.broadcastMainReport(report, startTime, endTime)
         self.updateMainBittext(report, startTime, endTime)
+        self.logger.log('Report Published, Main')
         self.saveReport(report, startTime, endTime, 'lastreport')
 
     def publishChanReport(self, startTime=None, endTime=None):
@@ -214,6 +216,7 @@ class Aggregator(BMAMaster):
         report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
         self.broadcastChanReport(report, startTime, endTime)
         self.updateChanBittext(report, startTime, endTime)
+        self.logger.log('Report Published, Chans')
         self.saveReport(report, startTime, endTime, 'lastChanReport')
 
     def publishBroadcastReport(self, startTime=None, endTime=None):
@@ -221,6 +224,7 @@ class Aggregator(BMAMaster):
         report = self.getBroadcastSubjectReport(startTime, endTime).encode('utf-8')
         self.broadcastBroadcastReport(report, startTime, endTime)
         self.updateBroadcastBittext(report, startTime, endTime)
+        self.logger.log('Report Published, Broadcasts')
         self.saveReport(report, startTime, endTime, 'lastBroadcastReport')
 
     def broadcastMainReport(self, report=None, startTime=None, endTime=None):
@@ -316,6 +320,8 @@ class Aggregator(BMAMaster):
 
         with open(filename, 'w') as file:
             file.write(report)
+
+        self.logger.log('Report Saved, filename')
 
     def getMainReport(self, startTime=None, endTime=None):
         startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
