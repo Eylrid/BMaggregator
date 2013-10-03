@@ -65,6 +65,10 @@ Todo:
   -Keep track of which addresses are for which chans -DONE
   -Reformat chan report -DONE
 
+-Only update bmaggradrs once per handler call
+
+-Add info to bmaggradrs
+
 -update text:
   -bmaggradrs - DONE
   -bitcoin donation address - DONE
@@ -74,7 +78,11 @@ Todo:
   -loop - DONE
   -other stuff
 
--add addresses and receivedTime to trash log?
+-add addresses, receivedTime, and beginning of message body to trash log
+
+-Seperate ApiUser and subclasses - done
+
+-Implement search
+
 -Seperate broadcasts and mailing lists?
--Implement search?
 
