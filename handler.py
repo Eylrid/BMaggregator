@@ -25,6 +25,7 @@ class Handler(BMAMaster):
 
     def processMessages(self, messages):
         ignoreCount = 0
+        addedAddress = False
         for message in messages:
             subject =  message['subject'].decode('base64').decode('utf-8')
             self.logger.log('processing message, ' + subject)
@@ -41,7 +42,7 @@ class Handler(BMAMaster):
                 self.logger.log('addSubscription result, %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
-                    self.updateAddressBittext()
+                    addedAddress = True
                 elif 'API Error 0016' in result:
                     #Already subscribed
                     self.sendError(address, 'That address is already being tracked.')
@@ -90,7 +91,7 @@ class Handler(BMAMaster):
 
                     if added:
                         self.confirmChan(address, details)
-                        self.updateAddressBittext()
+                        addedAddress = True
             elif command == 'channoname':
                 self.sendError(message['fromAddress'], 'No name specified. Please include the name of the chan in the subject. Example "add chan catpix"')
             elif command == 'btxtmodConf':
@@ -100,6 +101,9 @@ class Handler(BMAMaster):
                 continue
 
             self.trashMessage(message)
+
+        if addedAddress:
+            self.updateAddressBittext()
 
         self.logger.log('ignoreCount, ' + str(ignoreCount))
 
