@@ -136,7 +136,8 @@ class Handler(BMAMaster):
     def trashMessage(self, message):
         msgid = message['msgid']
         subject = message['subject'].decode('base64')
-        self.logger.log('trashing, %s, %s' %(msgid, subject))
+        fromAddress = message['fromAddress']
+        self.logger.log('trashing, %s, %s, %s' %(msgid, subject, fromAddress))
         self.apiUser.trashMessage(msgid)
 
     def parseSubject(self, subject):
