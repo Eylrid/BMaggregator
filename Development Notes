@@ -64,10 +64,9 @@ Todo:
   -subscribe to v3 and v4 for all chans -DONE
   -Keep track of which addresses are for which chans -DONE
   -Reformat chan report -DONE
-
--Only update bmaggradrs once per handler call
-
--Add info to bmaggradrs
+-Seperate ApiUser and subclasses - DONE
+-Only update bmaggradrs once per handler call - DONE
+-Add info to bmaggradrs - DONE
 
 -update text:
   -bmaggradrs - DONE
@@ -80,9 +79,9 @@ Todo:
 
 -add addresses, receivedTime, and beginning of message body to trash log
 
--Seperate ApiUser and subclasses - done
-
 -Implement search
+
+-log compression
 
 -Seperate broadcasts and mailing lists?
 
