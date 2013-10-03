@@ -16,13 +16,12 @@ class Handler(ApiUser):
         addresses = self.listAddresses()
         addressDict = dict([(a['address'], a) for a in addresses])
         filteredMessages = []
+        receivingAddresses = (self.config['mainAddress'], self.config['chanAddress'],
+                              self.config['broadcastAddress'])
         for message in messages:
             address = message['toAddress']
-            if (address == '[Broadcast subscribers]'
-                or addressDict.get(address, {'chan':''})['chan']):
-                continue
-
-            filteredMessages.append(message)
+            if address in receivingAddresses:
+                filteredMessages.append(message)
 
         return filteredMessages
 
