@@ -255,24 +255,38 @@ class Aggregator(BMAMaster):
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getMainReport(startTime, endTime).encode('utf-8')
 
+        bittextId = self.config['bittextMain']
+        oldBittextId = self.config['bittextMainOld']
+
         #old bittext
-        self.updateBittext(self.config['bittextMainOld'], 'BMaggregator Report',
-                           report)
+        deprecationNotice = self.getText('reportheaders/deprecation',
+                                         newId=bittextId,
+                                         oldId=oldBittextId).encode('utf-8')
+        oldreport = deprecationNotice + report
+        self.updateBittext(oldBittextId, 'BMaggregator Report',
+                           oldreport)
 
         #new bittext
-        self.updateBittext(self.config['bittextMain'], 'BMaggregator Report', report)
+        self.updateBittext(bittextId, 'BMaggregator Report', report)
 
     def updateChanBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
+        bittextId = self.config['bittextChans']
+        oldBittextId = self.config['bittextChansOld']
+
         #old bittext
-        self.updateBittext(self.config['bittextChansOld'],
-                          'BMaggregator Chan Report', report)
+        deprecationNotice = self.getText('reportheaders/deprecation',
+                                         newId=bittextId,
+                                         oldId=oldBittextId).encode('utf-8')
+        oldreport = deprecationNotice + report
+        self.updateBittext(oldBittextId,
+                          'BMaggregator Chan Report', oldreport)
 
         #new bittext
-        self.updateBittext(self.config['bittextChans'], 'BMaggregator Chan Report',
+        self.updateBittext(bittextId, 'BMaggregator Chan Report',
                            report)
 
     def updateBroadcastBittext(self, report=None, startTime=None, endTime=None):
@@ -280,12 +294,19 @@ class Aggregator(BMAMaster):
             startTime, endTime = self.getDefaultTimeWindow(startTime, endTime)
             report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
+        bittextId = self.config['bittextBroadcasts']
+        oldBittextId = self.config['bittextBroadcastsOld']
+
         #old bittext
-        self.updateBittext(self.config['bittextBroadcastsOld'],
-                           'BMaggregator Broadcast Report', report)
+        deprecationNotice = self.getText('reportheaders/deprecation',
+                                         newId=bittextId,
+                                         oldId=oldBittextId).encode('utf-8')
+        oldreport = deprecationNotice + report
+        self.updateBittext(oldBittextId,
+                           'BMaggregator Broadcast Report', oldreport)
 
         #new bittext
-        self.updateBittext(self.config['bittextBroadcasts'],
+        self.updateBittext(bittextId,
                            'BMaggregator Broadcast Report', report)
 
     def saveReport(self, report=None, startTime=None, endTime=None, filename='report'):
