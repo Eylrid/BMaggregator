@@ -1,0 +1,12 @@
+BMaggregator Tracked Addresses
+==============================
+
+This is a list of addresses tracked by BMaggregator. To get a daily report of the activity of these addresses subscribe to $mainAddress or see bittext.ch/$bittextMain.
+
+To add a chan to this list send a message from the chan address to $mainAddress with the subject "add chan <ChanName>".
+
+To add your own broadcast address to this list send a message from that address to $mainAddress with the subject "add broadcast <BroadcastLabel>".
+
+For more information about BMaggregator see bittext.ch/bmaggrinfo.
+
+

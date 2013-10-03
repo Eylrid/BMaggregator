@@ -129,7 +129,7 @@ class Handler(BMAMaster):
 
     def updateAddressBittext(self):
         self.logger.log('updating bittext, bmaggradrs')
-        message = self.listChansAndSubscriptions().encode('utf-8')
+        message = self.getAddressListReport().encode('utf-8')
         self.updateBittext('bmaggradrs', 'BMaggregator Tracked Addresses',
                            message)
 

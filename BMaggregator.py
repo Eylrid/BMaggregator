@@ -446,17 +446,6 @@ class Aggregator(BMAMaster):
                              endTimeString=endTimeString,
                              **self.config)
 
-    def getText(self, filePath, **args):
-        def sub(matchobj):
-            assert matchobj
-            key = matchobj.group(1)
-            return args[key]
-
-        with open(filePath, 'r') as file:
-            rawText = file.read()
-
-        return re.sub(r'\$(\w+)', sub, rawText)
-
     def getDefaultTimeWindow(self, startTime=None, endTime=None):
         if endTime == None:
             #use now as the end time
