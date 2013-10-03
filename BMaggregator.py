@@ -256,10 +256,11 @@ class Aggregator(BMAMaster):
             report = self.getMainReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        self.updateBittext('dOe7aAIVnZ', 'BMaggregator Report', report)
+        self.updateBittext(self.config['bittextMainOld'], 'BMaggregator Report',
+                           report)
 
         #new bittext
-        self.updateBittext('bmaggrmain', 'BMaggregator Report', report)
+        self.updateBittext(self.config['bittextMain'], 'BMaggregator Report', report)
 
     def updateChanBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
@@ -267,12 +268,12 @@ class Aggregator(BMAMaster):
             report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        self.updateBittext('N3Z4fiuSFW', 'BMaggregator Chan Report',
-                            report)
+        self.updateBittext(self.config['bittextChansOld'],
+                          'BMaggregator Chan Report', report)
 
         #new bittext
-        self.updateBittext('bmaggrchan', 'BMaggregator Chan Report',
-                            report)
+        self.updateBittext(self.config['bittextChans'], 'BMaggregator Chan Report',
+                           report)
 
     def updateBroadcastBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
@@ -280,12 +281,12 @@ class Aggregator(BMAMaster):
             report = self.getChanSubjectReport(startTime, endTime).encode('utf-8')
 
         #old bittext
-        self.updateBittext('HqdIvnnxI1', 'BMaggregator Broadcast Report',
-                            report)
+        self.updateBittext(self.config['bittextBroadcastsOld'],
+                           'BMaggregator Broadcast Report', report)
 
         #new bittext
-        self.updateBittext('bmaggrsubs', 'BMaggregator Broadcast Report',
-                            report)
+        self.updateBittext(self.config['bittextBroadcasts'],
+                           'BMaggregator Broadcast Report', report)
 
     def saveReport(self, report=None, startTime=None, endTime=None, filename='report'):
         if report == None:
