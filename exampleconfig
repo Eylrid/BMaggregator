@@ -1,4 +1,4 @@
-apiUser:username
+apiUserName:username
 apiPassword:password
 apiPort:8442
 logPath:log

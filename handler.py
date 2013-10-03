@@ -3,17 +3,15 @@
 import os
 import sys
 import re
-from api_user import *
-from logger import Logger
+from bmamaster import *
 CONFIGPATH = 'handlerconfig'
 
-class Handler(ApiUser):
-    def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
-                       configPath=CONFIGPATH):
-        ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
+class Handler(BMAMaster):
+    def __init__(self, configPath=CONFIGPATH, apiUser=None):
+        BMAMaster.__init__(self, configPath, apiUser)
 
     def filterMessages(self, messages):
-        addresses = self.listAddresses()
+        addresses = self.apiUser.listAddresses()
         addressDict = dict([(a['address'], a) for a in addresses])
         filteredMessages = []
         receivingAddresses = (self.config['mainAddress'], self.config['chanAddress'],
@@ -39,7 +37,7 @@ class Handler(ApiUser):
                 encodedLabel = details.encode('utf-8').encode('base64')
                 address = message['fromAddress']
                 self.logger.log('adding subcription, %s, %s' %(address, details))
-                result = self.api.addSubscription(address, encodedLabel)
+                result = self.apiUser.addSubscription(address, encodedLabel)
                 self.logger.log('addSubscription result, %s' %result)
                 if 'Added subscription' in result:
                     self.confirmSubscription(address, details)
@@ -56,15 +54,15 @@ class Handler(ApiUser):
                 encodedPassphrase = details.encode('utf-8').encode('base64')
                 self.logger.log('adding chan, %s' %(details))
                 fromAddress = message['fromAddress']
-                status, addressVersion, streamNumber, ripe = self.decodeAddress(fromAddress)
-                address = self.api.getDeterministicAddress(encodedPassphrase,
+                status, addressVersion, streamNumber, ripe = self.apiUser.decodeAddress(fromAddress)
+                address = self.apiUser.getDeterministicAddress(encodedPassphrase,
                                                            addressVersion,
                                                            streamNumber)
                 if details.startswith('<') and details.endswith('>') and address != fromAddress:
                     self.logger.log('striping <>')
                     details = details[1:-1]
                     encodedPassphrase = details.encode('utf-8').encode('base64')
-                    address = self.api.getDeterministicAddress(encodedPassphrase,
+                    address = self.apiUser.getDeterministicAddress(encodedPassphrase,
                                                                addressVersion,
                                                                streamNumber)
 
@@ -75,8 +73,9 @@ class Handler(ApiUser):
                 else:
                     added = False
                     for addressVersion in ADDRESSVERSIONS:
-                        result = self.api.addChan(encodedPassphrase, addressVersion,
-                                                  streamNumber)
+                        result = self.apiUser.addChan(encodedPassphrase,
+                                                  addressVersion=addressVersion,
+                                                  streamNumber=streamNumber)
                         self.logger.log('addChan result, %s' %result)
                         if 'Added chan' in result:
                             added = True
@@ -108,20 +107,20 @@ class Handler(ApiUser):
         fromAddress = self.mainAddress
         subject = 'Broadcast Add Confirmation'
         message = "Address %s added to BMaggregator as a broadcast with label '%s'" %(toAddress, label)
-        self.sendMessage(toAddress, fromAddress, subject, message)
+        self.apiUser.sendMessage(toAddress, fromAddress, subject, message)
 
     def confirmChan(self, toAddress, label):
         fromAddress = self.mainAddress
         subject = 'Chan Add Confirmation'
         message = "Added chan %s with address %s to BMaggregator. See bittext.ch/bmaggrinfo for more information." %(label, toAddress)
-        self.sendMessage(toAddress, fromAddress, subject, message)
+        self.apiUser.sendMessage(toAddress, fromAddress, subject, message)
 
     def sendError(self, toAddress, message=None):
         fromAddress = self.mainAddress
         subject = 'Error'
         if message == None:
             message = 'There was an unknown error processing your request.'
-        self.sendMessage(toAddress, fromAddress,
+        self.apiUser.sendMessage(toAddress, fromAddress,
                              subject, message)
 
     def updateAddressBittext(self):
@@ -134,7 +133,7 @@ class Handler(ApiUser):
         msgid = message['msgid']
         subject = message['subject'].decode('base64')
         self.logger.log('trashing, %s, %s' %(msgid, subject))
-        self.api.trashMessage(msgid)
+        self.apiUser.trashMessage(msgid)
 
     def parseSubject(self, subject):
         patterns = [(r'(?i)\s*add\s+broadcast\s+(\S.*?)\s*$', 'subscription'),
@@ -150,19 +149,6 @@ class Handler(ApiUser):
         else:
             return ('ignore', '')
 
-
-def loadConfig():
-    with open('handlerconfig', 'r') as file:
-        args = {}
-        for line in file.readlines():
-            if not line.strip(): continue
-            key, value = line.split(':')
-            key = key.strip()
-            value = value.strip()
-            args[key]=value
-
-    return args
-
 def main():
     args = sys.argv[1:]
     if len(args):
@@ -174,7 +160,7 @@ def main():
     handler.logger.log('arg, ' + arg)
 
     if arg == 'newMessage':
-        allmsgs = handler.getRawMessages()
+        allmsgs = handler.apiUser.getRawMessages()
         filteredmsgs = handler.filterMessages(allmsgs)
         print 'all messages:', len(allmsgs)
         print 'direct messages:', len(filteredmsgs)

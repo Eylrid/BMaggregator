@@ -2,30 +2,28 @@ import xmlrpclib
 import json
 import time
 from logger import Logger
-ADDRESSVERSIONS = (3,4)
 
 class ApiUser:
-    def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
-                       configPath=None):
-        self.config = loadConfig(configPath)
-        logPath = self.config['logPath']
-        self.logger = Logger(logPath)
+    def __init__(self, apiUserName=None, apiPassword=None, apiPort=None,
+                       config={}, logger=None):
+        self.config = config
 
-        self.mainAddress = self.config['mainAddress']
-        self.bittextAddress = self.config['bittextAddress']
-        self.chanAddress = self.config['chanAddress']
-        self.broadcastAddress = self.config['broadcastAddress']
-
-        if not apiUser:
-            apiUser = self.config['apiUser']
+        if not apiUserName:
+            apiUserName = self.config['apiUserName']
         if not apiPassword:
             apiPassword = self.config['apiPassword']
         if not apiPort:
             apiPort = self.config['apiPort']
 
-        apiAddress = "http://%s:%s@localhost:%s/" %(apiUser, apiPassword,
+        apiAddress = "http://%s:%s@localhost:%s/" %(apiUserName, apiPassword,
                                                     apiPort)
         self.api = xmlrpclib.ServerProxy(apiAddress)
+
+        if logger:
+            self.logger = logger
+        else:
+            logPath = self.config['logPath']
+            self.logger = Logger(logPath)
 
     def getRawMessages(self):
         inboxMessages = json.loads(self.api.getAllInboxMessages())['inboxMessages']
@@ -36,56 +34,6 @@ class ApiUser:
 
     def listSubscriptions(self):
         return json.loads(self.api.listSubscriptions())['subscriptions']
-
-    def getChanAddresses(self):
-        '''return a dict mapping chan address to label'''
-        addresses = self.listAddresses()
-        return dict([(i['address'], i['label'][6:].strip()) for i in addresses
-                      if i['chan']])
-
-    def getChanLabels(self):
-        '''return a dict mapping chan labels to addresses'''
-        addresses = [i for i in self.listAddresses() if i['chan']]
-        addresses.reverse() #list newer addresses first
-        labels = {}
-        for i in addresses:
-            label = i['label'][6:].strip()
-            address = i['address']
-            if label in labels:
-                labels[label].append(address)
-            else:
-                labels[label] = [address]
-
-        return labels
-
-    def getSubscriptions(self):
-        addresses = self.listSubscriptions()
-        return dict([(i['address'], i['label'].decode('base64')) for i in addresses])
-
-    def getChansAndSubscriptions(self):
-        chans = self.getChanAddresses()
-        subs = self.getSubscriptions()
-        return chans, subs
-
-    def listChansAndSubscriptions(self):
-        lst = '''BMaggregator Tracked Addresses
-==============================
-
-'''
-        chans, subs = self.getChansAndSubscriptions()
-        chans = [(chans[i],i) for i in chans]
-        chans.sort(key=lambda x:x[0].lower())
-        subs = [(subs[i],i) for i in subs]
-        subs.sort(key=lambda x:x[0].lower())
-        lst += 'Chans:\n======\n'
-        for label, address in chans:
-            lst += '%s\t%s\n' %(address, label)
-
-        lst += '\n\nBroadcasts:\n===========\n'
-        for label, address in subs:
-            lst += '%s\t%s\n' %(address, label)
-
-        return lst
 
     def decodeAddress(self, address):
         result = self.api.decodeAddress(address)
@@ -103,6 +51,7 @@ class ApiUser:
         self.logger.log('Sending Broadcast, %s, %s'%(fromAddress, subject))
         result = self.api.sendBroadcast(fromAddress, encodedSubject, encodedMessage)
         self.logger.log('Api Result, %s'%result)
+        return result
 
     def sendMessage(self, toAddress, fromAddress, subject, message):
         '''Send a message. subject and message should be raw'''
@@ -112,27 +61,29 @@ class ApiUser:
                          %(toAddress, fromAddress, subject))
         result = self.api.sendMessage(toAddress, fromAddress, encodedSubject, encodedMessage)
         self.logger.log('Api Result, %s'%result)
+        return result
 
-    def updateBittext(self, id, subject, message):
-        self.logger.log('Updating Bittext, %s, %s' %(id, subject))
-        fromAddress = self.mainAddress
-        toAddress = self.bittextAddress
-        fullSubject = 'mod %s %s' %(id, subject)
-        self.sendMessage(toAddress, fromAddress, fullSubject, message)
+    def trashMessage(self, msgid):
+        result=self.api.trashMessage(msgid)
+        self.logger.log('Api Result, %s'%result)
+        return result
 
+    def addSubscription(self, address, label):
+        result=self.api.addSubscription(address, label)
+        self.logger.log('Api Result, %s'%result)
+        return result
 
-def loadConfig(configPath=None):
-    if not configPath:
-        configPath = 'config'
+    def getDeterministicAddress(self, passphrase, addressVersion,
+                                streamNumber):
+        return self.api.getDeterministicAddress(passphrase, addressVersion,
+                                                streamNumber)
 
-    with open(configPath, 'r') as file:
-        args = {}
-        for line in file.readlines():
-            if not line.strip(): continue
-            key, value = line.split(':')
-            key = key.strip()
-            value = value.strip()
-            args[key]=value
+    def addChan(self, passphrase, address=None, addressVersion=0, streamNumber=0):
+        if address:
+            result = self.api.addChan(passphrase, address)
+        else:
+            result = self.api.addChan(passphrase, addressVersion, streamNumber)
 
-    return args
+        self.logger.log('Api Result, %s'%result)
+        return result
 

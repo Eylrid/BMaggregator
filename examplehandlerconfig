@@ -1,5 +1,6 @@
-logPath:/home/user/BMaggregator/handlerLog
-apiUser:username
+runPath:~/BMaggregator
+logPath:~/BMaggregator/handlerLog
+apiUserName:username
 apiPassword:password
 apiPort:port
 mainAddress:BM-main

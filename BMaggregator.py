@@ -4,7 +4,7 @@ import time
 import os
 import pickle
 import re
-from api_user import ApiUser
+from bmamaster import BMAMaster
 
 class Message:
     def __init__(self, rawmsg):
@@ -21,12 +21,11 @@ class Message:
         self.firstChars = rawmsg['message'].decode('base64')[:150]
         self.trashed = False
 
-class Aggregator(ApiUser):
+class Aggregator(BMAMaster):
     SEPERATOR = u'~'
     CHECKINTERVAL = 3600
-    def __init__(self, apiUser=None, apiPassword=None, apiPort=None,
-                       configPath=None):
-        ApiUser.__init__(self, apiUser, apiPassword, apiPort, configPath)
+    def __init__(self, configPath=None, apiUser=None):
+        BMAMaster.__init__(self, configPath, apiUser)
         self.publishTimeFilePath = 'data/publishTime'
         self.messageFilePath = 'data/messages.pkl'
         self.idFilePath = 'data/ids.pkl'
@@ -40,7 +39,7 @@ class Aggregator(ApiUser):
         self.addNewMessages()
 
     def getMessages(self):
-        rawMessages = self.getRawMessages()
+        rawMessages = self.apiUser.getRawMessages()
         messages = [Message(i) for i in rawMessages]
         return [i for i in messages if self.getAddressFromMessage(i)]
 
@@ -124,7 +123,7 @@ class Aggregator(ApiUser):
         self.saveEverything()
         for msg in self.messages:
             if msg.trashed: continue
-            self.api.trashMessage(msg.msgid)
+            self.apiUser.trashMessage(msg.msgid)
             msg.trashed = True
         self.saveEverything()
         self.logger.log('messages trashed')
@@ -231,7 +230,7 @@ class Aggregator(ApiUser):
 
         subject = 'BMaggregator Report'
         address = self.mainAddress
-        self.sendBroadcast(address, subject, report)
+        self.apiUser.sendBroadcast(address, subject, report)
 
     def broadcastChanReport(self, report=None, startTime=None, endTime=None):
         if report==None:
@@ -240,7 +239,7 @@ class Aggregator(ApiUser):
 
         subject = 'BMaggregator Chan Report'
         address = self.chanAddress
-        self.sendBroadcast(address, subject, report)
+        self.apiUser.sendBroadcast(address, subject, report)
 
     def broadcastBroadcastReport(self, report=None, startTime=None, endTime=None):
         if report==None:
@@ -249,7 +248,7 @@ class Aggregator(ApiUser):
 
         subject = 'BMaggregator Broadcast Report'
         address = self.broadcastAddress
-        self.sendBroadcast(address, subject, report)
+        self.apiUser.sendBroadcast(address, subject, report)
 
     def updateMainBittext(self, report=None, startTime=None, endTime=None):
         if report == None:
