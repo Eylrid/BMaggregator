@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from BMaggregator import *
+from logger import Logger
 import time
 
 def check():
@@ -7,8 +8,9 @@ def check():
     return bma.check(addNewMessages=False)
 
 def logerror(exception):
-    au = ApiUser()
-    au.logger.log('loop Error!!, ' + ', '.join((str(type(exception)),)+ exception.args))
+    logger = Logger('logloopexceptions')
+    args = [str(i) for i in exception.args]
+    logger.log('loop Error!!, ' + ', '.join([str(type(exception)),]+args))
 
 def loop():
     while True:
