@@ -13,3 +13,5 @@ To use:
   "apinotifypath=/home/user/BMaggregator/handler.py"
 -Start bitmessage.
 -Run loop.py
+
+For information about the instance of BMaggregator run by Eylrid/Apatomoose see Apatomoose_Instance_Info or bittext.ch/bmaggrinfo.
